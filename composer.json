@@ -1,0 +1,24 @@
+{
+  "name": "wylly/mobilesasa",
+  "description": "Complete plugin for Mobilesasa",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "autoload": {
+    "psr-4": {
+      "Wylly\\Mobilesasa\\": "includes/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Wyllymk",
+      "email": "wilsonkabatha@gmail.com",
+      "homepage": "https://wilsondevops.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "email": "wilsonkabatha@gmail.com"
+  },
+  "minimum-stability": "dev",
+  "require": {}
+}
