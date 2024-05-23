@@ -1,0 +1,98 @@
+/* NEW CSS */
+.ga-welcome-panel {
+  background-color: #fff;
+  padding: 20px 10px 10px;
+  border: 1px solid #ccd0d4;
+  box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+.ga-welcome-panel .ga-welcome-panel-column-container {
+  box-sizing: border-box;
+  width: 100%;
+  clear: both;
+  display: grid;
+  z-index: 1;
+  padding: 0 20px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  align-self: flex-end;
+  background: #fff;
+}
+
+.ga-welcome-panel-close {
+  color: grey !important;
+}
+.ga-welcome-panel-close:hover {
+  color: #c3202f !important;
+}
+
+.ga-welcome-panel-close::before {
+  color: grey !important;
+}
+.ga-welcome-panel-close:hover::before {
+  color: #c3202f !important;
+}
+
+.nav-tabs {
+  float: left;
+  width: calc(100% - 20px);
+  margin: 0;
+  list-style-type: none;
+  border-bottom: 1px solid transparent;
+}
+
+.nav-tabs > li {
+  float: left;
+  margin-bottom: -1px;
+}
+
+.nav-tabs > li > a {
+  margin-right: 2px;
+  line-height: 1.5px;
+  padding: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  float: inherit;
+  text-decoration: none;
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  color: #555;
+  cursor: default;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+}
+
+.tab-content > .tab-pane {
+  float: left;
+  width: calc(100% - 20px);
+  display: none;
+}
+
+.tab-content > .tab-pane.active {
+  display: block;
+  padding: 10px;
+  background-color: #fff;
+  box-shadow: 0 5px 4px -2px rgba(0, 0, 0, 0.15);
+}
+
+.gat-footer {
+  clear: both;
+  text-align: center;
+  padding: 20px;
+}
+
+#response-success {
+  color: green;
+  font-weight: bold;
+}
+#response-error {
+  color: #c3202f;
+  font-weight: bold;
+}
+/* NEW CSS END */
