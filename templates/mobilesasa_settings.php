@@ -20,7 +20,7 @@ if ($is_update) {
             break;
     }
     // Add a settings updated message with the class of "updated"
-    add_settings_error('mobilesasa_messages', 'ga_message', $message, 'updated');
+    add_settings_error('mobilesasa_messages', 'ms_message', $message, 'updated');
 }
 
 function get_all_customers() {
@@ -75,7 +75,20 @@ function get_all_customers() {
                 ?>
             </form>
             <hr>
-            <?php $customers = get_all_customers();?>
+
+            <?php
+                $customers = get_all_customers();
+                // Check if the message was sent successfully
+                $message_sent = get_transient('wcbulksms_message_sent');
+                if ($message_sent) {
+                    delete_transient('wcbulksms_message_sent');
+                ?>
+            <div class="notice notice-success is-dismissible">
+                <p><?php esc_html_e('SMS messages sent successfully.', 'mobilesasa'); ?></p>
+            </div>
+            <?php
+                }
+            ?>
 
             <h3><?php esc_html_e('Available Customers', 'mobilesasa'); ?></h3>
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
@@ -111,9 +124,7 @@ function get_all_customers() {
                     <?php esc_html_e('Select All Customers', 'mobilesasa'); ?>
                 </label>
                 <br><br>
-                <textarea name="bulk_sms_message" rows="5"
-                    style="width:100%;"><?php echo esc_textarea(get_option('mobilesasa_bulk_options')['bulk_message']); ?></textarea>
-                <br><br>
+
                 <button type="submit" class="button button-primary">
                     <?php esc_html_e('Send SMS', 'mobilesasa'); ?>
                 </button>

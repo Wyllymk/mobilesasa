@@ -37,7 +37,7 @@ if( ! class_exists('MobileSasa_BulkSMS')){
             $message = $options['bulk_message'] ?? '';
             $is_enabled = $options['bulk_sms_enable'] ?? '0';
 
-            $message = sanitize_text_field($_POST['bulk_sms_message']);
+            // $message = sanitize_text_field($_POST['bulk_sms_message']);
             // update_option('bulk_message', $message);
 
     

@@ -118,18 +118,13 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
                     }
                 }
 
-                $adminStatuses = [
-                    'pending' => 'pending_sms',
-                    'on-hold' => 'onhold_sms',
-                    'processing' => 'processing_sms',
-                ];
+                $$adminStatuses = ['pending', 'on-hold', 'processing'];
                 $adminPhoneNumber = self::$options['transactional_admin_number'] ?? '';
-                // Check for flag already set or not.
-				$has_admin_logged = get_post_meta( $order->get_id(), '_admin_sms_sent', true );
-
-				if(! $has_admin_logged){
+                $has_admin_logged = get_post_meta($order->get_id(), '_admin_sms_sent', true);
+                
+                if (!$has_admin_logged) {
                     // Check each status and send SMS if enabled
-                    foreach ($adminStatuses as $status => $option_prefix) {
+                    foreach ($adminStatuses as $status) {
                         if ($newStatus === $status && self::$options["admin_sms_enable"] === '1' && !empty(self::$options["admin_sms_message"])) {
                             $message = str_replace(
                                 ['{name}', '{orderid}', '{total}', '{phone}'],
@@ -140,6 +135,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
                         }
                     }
                 }
+                
             } else {
                 // error_log("Transactional SMS is not enabled.");
             }
@@ -186,8 +182,6 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
                     $senderId = $defaultOptions['mobilesasa_sender'] ?? '';
                     $apiToken = $defaultOptions['mobilesasa_token'] ?? '';
 
-                    error_log("Sender ID: $senderId, API Token: $apiToken");
-
                     // Initialize the SMS sending class with the sender ID and API token
                     MobileSasa_SendSMS::init($senderId, $apiToken);
 
@@ -197,8 +191,6 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
                     $name = $order->get_billing_first_name();
                     $total = $order->get_total();
 
-                    error_log("Order details - Phone: $phone, Name: $name, Total: $total");
-
                     if (self::$options["draft_sms_enable"] === '1' && !empty(self::$options["draft_sms_message"])) {
                         $message = str_replace(
                             ['{name}', '{orderid}', '{total}', '{phone}'],
@@ -206,7 +198,6 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
                             self::$options["draft_sms_message"]
                         );
                         MobileSasa_SendSMS::wcSendExpressPostSMS(MobileSasa_SendSMS::wcCleanPhone($phone), $message);
-                        error_log("SMS sent for status '$status' - Phone: $phone, Message: $message");
                     }
                     // Set flag to prevent duplicate logging
 					update_post_meta( $order->get_id(), '_sms_sent_logged', true );
