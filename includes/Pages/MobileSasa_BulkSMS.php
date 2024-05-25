@@ -20,7 +20,7 @@ if( ! class_exists('MobileSasa_BulkSMS')){
 
     class MobileSasa_BulkSMS {
 
-        public static function init(): void {
+        public static function register(): void {
             
             add_action('admin_post_send_bulk_sms', [self::class, 'handle_send_bulk_sms']);
             add_action('woocommerce_after_order_notes', [self::class, 'sms_opt_in_checkout']);
@@ -28,7 +28,7 @@ if( ! class_exists('MobileSasa_BulkSMS')){
         }
 
  
-        public static function handle_send_bulk_sms() {
+        public static function handle_send_bulk_sms(): void {
             if (!current_user_can('manage_options') || !check_admin_referer('send_bulk_sms_nonce')) {
                 wp_die(__('You do not have sufficient permissions to access this page.', 'mobilesasa'));
             }
@@ -53,7 +53,7 @@ if( ! class_exists('MobileSasa_BulkSMS')){
                 if (!empty($_POST['send_sms'])) {
                     $phones = array_map('sanitize_text_field', $_POST['send_sms']);
                     foreach ($phones as $phone) {
-                        MobileSasa_SendSMS::wc_sendExpressPostSMS(MobileSasa_SendSMS::wc_clean_phone($phone), $message);
+                        MobileSasa_SendSMS::wcSendExpressPostSMS(MobileSasa_SendSMS::wcCleanPhone($phone), $message);
                     }
     
                     // Add a success message

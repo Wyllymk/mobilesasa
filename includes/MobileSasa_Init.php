@@ -28,6 +28,7 @@ if( ! class_exists('MobileSasa_Init')){
                 Pages\MobileSasa_Admin::class,
                 Pages\MobileSasa_SendSMS::class,
                 Pages\MobileSasa_BulkSMS::class,
+                Pages\MobileSasa_TransactionalSMS::class,
                 Base\MobileSasa_Settings::class,
                 Base\MobileSasa_Enqueue::class
                 

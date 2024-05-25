@@ -13,7 +13,7 @@
 
 namespace Wylly\MobileSasa\Pages;
 
-// if direct access than exit the file.
+// If direct access, then exit the file.
 defined( 'ABSPATH' ) || exit;
 
 if( ! class_exists('MobileSasa_SendSMS')){
@@ -29,12 +29,12 @@ if( ! class_exists('MobileSasa_SendSMS')){
         }
 
         // Send SMS
-        public static function wc_sendExpressPostSMS( $phones, $message ): int {
+        public static function wcSendExpressPostSMS( $phones, $message ): int {
             $status = 0;
-            $multiple_numbers = strpos( $phones, ',' );
+            $multiple_numbers = strpos( $phones, ',' ) !== false;
 
-            $url = $multiple_numbers !== false ? 'https://api.mobilesasa.com/v1/send/bulk' : 'https://api.mobilesasa.com/v1/send/message';
-            $phone_param = $multiple_numbers !== false ? 'phones' : 'phone';
+            $url = $multiple_numbers ? 'https://api.mobilesasa.com/v1/send/bulk' : 'https://api.mobilesasa.com/v1/send/message';
+            $phone_param = $multiple_numbers ? 'phones' : 'phone';
 
             $postData = [
                 'senderID' => self::$wc_senderid,
@@ -55,24 +55,32 @@ if( ! class_exists('MobileSasa_SendSMS')){
             ]);
 
             $response = curl_exec( $curl );
+
+            if ($response === false) {
+                // Handle curl error
+                $error = curl_error( $curl );
+                error_log( 'cURL Error: ' . $error );
+            }
+
             curl_close( $curl );
 
-            $responseVals = json_decode( $response, true );
-            if ( $responseVals['responseCode'] == '0200' ) {
-                $status = 1;
+            if ($response) {
+                $responseVals = json_decode( $response, true );
+                if ( isset($responseVals['responseCode']) && $responseVals['responseCode'] == '0200' ) {
+                    $status = 1;
+                }
             }
 
             return $status;
         }
 
         // Clean phone numbers
-        public static function wc_clean_phone( $phones ): string {
+        public static function wcCleanPhone( $phones ): string {
             $cleaned_phones = [];
             $phones_array = explode( ",", $phones );
 
             foreach ( $phones_array as $phone ) {
-                $tel = str_replace( [' ', '<', '>', '&', '{', '}', '*', "+", '!', '@', '#', "$", '%', '^', '&'], "", str_replace( "-", "", $phone ) );
-                $cleaned_phone = "254" . substr( $tel, -9 );
+                $cleaned_phone = "254" . substr( preg_replace( '/[^0-9]/', '', $phone ), -9 );
                 $cleaned_phones[] = $cleaned_phone;
             }
 
