@@ -30,7 +30,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
         private static $options = [];
 
         /**
-         * Initialize the class
+         * Registers the necessary hooks and initializes the class.
          */
         public static function register(): void {
 
@@ -47,7 +47,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
         }
 
         /**
-         * Load options
+         * Load options from the database
          */
         private static function loadOptions(): void {
 
@@ -67,11 +67,11 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
         }
 
         /**
-         * Send SMS on order status change
+         * Handles the order status change and sends SMS notifications.
          *
-         * @param int $orderId Order ID
-         * @param string $oldStatus Old order status
-         * @param string $newStatus New order status
+         * @param int $orderId The ID of the order.
+         * @param string $oldStatus The previous order status.
+         * @param string $newStatus The new order status.
          */
         public static function wcOrderStatus(int $orderId, string $oldStatus, string $newStatus): void {
 
@@ -142,12 +142,11 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
         }
 
         /**
-         * 
-         * Schedule WP CRON event on order draft status schange
+         * Schedules a WP-Cron event to track the duration of the order draft status.
          *
-         * @param int $order Order 
+         * @param \WC_Order $order The WooCommerce order object.
          */
-        public static function wcTrackOrderDraftDuration( $order ) {
+        public static function wcTrackOrderDraftDuration(\WC_Order  $order ): void {
 			// Check for flag already set or not.
 			$has_draft_logged = get_post_meta( $order->get_id(), '_draft_duration_logged', true );
 			
@@ -162,11 +161,11 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
 		}
         
         /**
-         * Send SMS on order draft change after 300 seconds
+         * Sends SMS notification for draft orders after a specified duration.
          *
-         * @param int $orderId Order ID
+         * @param int $orderId The ID of the order.
          */
-        public static function sendDraftOrderSmsCallback( $orderId ) {
+        public static function sendDraftOrderSmsCallback(int $orderId): void {
 
 			$has_sms_logged = get_post_meta( $orderId, '_sms_sent_logged', true );
 			
@@ -213,9 +212,9 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
 		}
 
         /**
-         * Schedule the function to run once every 2 hours
+         * Schedules a periodic event to delete custom post meta.
          */
-		public static function scheduleDeleteCustomPostMeta() {
+        public static function scheduleDeleteCustomPostMeta(): void {
 			// Check if the scheduled event already exists
 			if (!wp_next_scheduled('delete_custom_post_meta_event')) {
 				// Schedule the event to run once every 2 hours
@@ -224,9 +223,9 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
 		}
         
         /**
-         * Function to delete specific post meta
+         * Deletes specific custom post meta data created by the plugin.
          */
-		public static function deleteCustomPostMeta() {
+        private static function deleteCustomPostMeta(): void {
 			// Define the post meta keys created by your plugin
 			$meta_keys = array(
 				'_admin_sms_sent',

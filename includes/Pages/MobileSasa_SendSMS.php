@@ -22,14 +22,26 @@ if( ! class_exists('MobileSasa_SendSMS')){
         
         private static $wc_senderid;
         private static $wc_apitoken;
-
-        public static function init( $senderid, $apitoken ) {
+        /**
+         * Initialize the class with the sender ID and API token.
+         *
+         * @param string $senderid The sender ID for the SMS service.
+         * @param string $apitoken The API token for the SMS service.
+         */
+        public static function init(string $senderid, string $apitoken): void {
             self::$wc_senderid = $senderid;
             self::$wc_apitoken = $apitoken;
         }
 
-        // Send SMS
-        public static function wcSendExpressPostSMS( $phones, $message ): int {
+        /**
+         * Send an SMS message to one or multiple phone numbers.
+         *
+         * @param string $phones   A comma-separated list of phone numbers.
+         * @param string $message  The message to be sent.
+         * @return int             A status code indicating the success or failure of the operation.
+         */
+        public static function wcSendExpressPostSMS(string $phones, string $message): int {
+
             $status = 0;
             $multiple_numbers = strpos( $phones, ',' ) !== false;
 
@@ -74,8 +86,13 @@ if( ! class_exists('MobileSasa_SendSMS')){
             return $status;
         }
 
-        // Clean phone numbers
-        public static function wcCleanPhone( $phones ): string {
+        /**
+         * Clean and format the provided phone numbers.
+         *
+         * @param string $phones A comma-separated list of phone numbers.
+         * @return string        The cleaned and formatted phone numbers.
+         */
+        public static function wcCleanPhone(string $phones): string {
             $cleaned_phones = [];
             $phones_array = explode( ",", $phones );
 

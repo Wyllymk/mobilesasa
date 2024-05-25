@@ -13,7 +13,7 @@ if( ! class_exists('MobileSasa_Enqueue')){
     class MobileSasa_Enqueue{
 
         public static function register(){
-            add_action( 'admin_enqueue_scripts', array(__CLASS__, 'enqueueAdminScripts') );
+            add_action( 'admin_enqueue_scripts', array(self::class, 'enqueueAdminScripts') );
         }
 
         public static function enqueueAdminScripts(){

@@ -34,10 +34,10 @@ if( ! class_exists('MobileSasa_Settings_Api')){
 
         public static function register(){
             if(! empty(self::$admin_pages)){
-                add_action('admin_menu', array(__CLASS__, 'addAdminMenu'));
+                add_action('admin_menu', array(self::class, 'addAdminMenu'));
             }
             if(! empty(self::$settings)){
-                add_action('admin_init', array(__CLASS__, 'registerCustomFields'));
+                add_action('admin_init', array(self::class, 'registerCustomFields'));
             }
         }
 

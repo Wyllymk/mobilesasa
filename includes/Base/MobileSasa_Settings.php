@@ -12,11 +12,20 @@ if( ! class_exists('MobileSasa_Settings')){
 
     class MobileSasa_Settings{
 
-        public static function register(){
-            add_filter( 'plugin_action_links_'.MS_PLUGIN_NAME, array(__CLASS__, 'settingsLink') );
+        /**
+         * Register the necessary hooks for the MobileSasa_Settings class.
+         */
+        public static function register(): void {
+            add_filter( 'plugin_action_links_'.MS_PLUGIN_NAME, array(self::class, 'settingsLink') );
         }
         
-        public static function settingsLink($links){
+        /**
+         * Add a settings link to the plugin's entry in the plugins list.
+         *
+         * @param array $links An array of existing links for the plugin.
+         * @return array The updated array of links with the settings link added.
+         */
+        public static function settingsLink(array $links): array {
             $settings_link = '<a href="admin.php?page=mobilesasa-sms">Settings</a>';
             array_push( $links, $settings_link);
             return $links;

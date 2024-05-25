@@ -31,7 +31,10 @@ if( ! class_exists('MobileSasa_Admin')){
 
         public static $sub_pages = array();
        
-        public static function register(){
+        /**
+         * Register the necessary hooks and settings for the Mobile Sasa Admin class.
+         */
+        public static function register(): void {
 
             self::$callbacks = new MobileSasa_Callbacks();
 
@@ -51,7 +54,10 @@ if( ! class_exists('MobileSasa_Admin')){
 
         }
         
-        public static function setPages(){
+        /**
+         * Set the pages for the Mobile Sasa Admin menu.
+         */
+        public static function setPages(): void {
             self::$pages = [
                 [
                 'page_title'    => 'Mobile Sasa SMS',
@@ -65,7 +71,10 @@ if( ! class_exists('MobileSasa_Admin')){
             ];
         }
 
-        public static function setSubPages(){
+        /**
+         * Set the sub-pages for the Mobile Sasa Admin menu.
+         */
+        public static function setSubPages(): void {
             self::$sub_pages = [
                 [
                     'parent_slug'   => 'mobilesasa-sms',
@@ -78,7 +87,10 @@ if( ! class_exists('MobileSasa_Admin')){
             ];
         }
 
-        public static function setAdminSettings(){
+        /**
+         * Set the admin settings for the Mobile Sasa plugin.
+         */
+        public static function setAdminSettings(): void {
             $args = array(
                 array(
                     'option_group'  => 'mobilesasa_admin_group',
@@ -99,7 +111,10 @@ if( ! class_exists('MobileSasa_Admin')){
             self::$admin_settings->setSettings($args);
         }
 
-        public static function setAdminSections(){
+        /**
+         * Set the admin sections for the Mobile Sasa plugin settings.
+         */
+        public static function setAdminSections(): void {
             $args = array(
                 array(
                     'id'            => 'mobilesasa_index_token',
@@ -124,7 +139,10 @@ if( ! class_exists('MobileSasa_Admin')){
             self::$admin_settings->setSections($args);
         }
 
-        public static function setAdminFields(){
+        /**
+         * Set the admin fields for the Mobile Sasa plugin settings.
+         */
+        public static function setAdminFields(): void {
             $args = array(
                     [
                         'id'            => 'mobilesasa_sender',

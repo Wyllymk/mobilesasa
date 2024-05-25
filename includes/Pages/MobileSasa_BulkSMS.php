@@ -19,16 +19,25 @@ defined( 'ABSPATH' ) || exit;
 if( ! class_exists('MobileSasa_BulkSMS')){
 
     class MobileSasa_BulkSMS {
-
+        /**
+         * Register the necessary hooks for the WooCommerce Bulk SMS functionality.
+         */
         public static function register(): void {
             
-            add_action('admin_post_send_bulk_sms', [self::class, 'handle_send_bulk_sms']);
-            add_action('woocommerce_after_order_notes', [self::class, 'sms_opt_in_checkout']);
-            add_action('woocommerce_checkout_update_order_meta', [self::class, 'save_sms_opt_in']);
+            add_action('admin_post_send_bulk_sms', [self::class, 'handleSendBulkSms']);
+            add_action('woocommerce_after_order_notes', [self::class, 'smsOptInCheckout']);
+            add_action('woocommerce_checkout_update_order_meta', [self::class, 'saveSmsOptIn']);
         }
 
  
-        public static function handle_send_bulk_sms(): void {
+        /**
+         * Handle the submission of the bulk SMS form.
+         *
+         * This function checks if the user has the required permissions, and if the bulk SMS is enabled.
+         * If enabled, it sends the bulk SMS to the provided phone numbers using the MobileSasa_SendSMS class.
+         */
+        public static function handleSendBulkSms(): void {
+            
             if (!current_user_can('manage_options') || !check_admin_referer('send_bulk_sms_nonce')) {
                 wp_die(__('You do not have sufficient permissions to access this page.', 'mobilesasa'));
             }
@@ -36,10 +45,6 @@ if( ! class_exists('MobileSasa_BulkSMS')){
             $options = get_option('mobilesasa_bulk_options');
             $message = $options['bulk_message'] ?? '';
             $is_enabled = $options['bulk_sms_enable'] ?? '0';
-
-            // $message = sanitize_text_field($_POST['bulk_sms_message']);
-            // update_option('bulk_message', $message);
-
     
             if ($is_enabled == '1' && !empty($message)) {
                 // Get the default sender ID and API token for the SMS service
@@ -67,8 +72,12 @@ if( ! class_exists('MobileSasa_BulkSMS')){
         }
 
 
-        // Display custom checkout field
-        public static function sms_opt_in_checkout($checkout) {
+        /**
+         * Display the SMS opt-in checkbox field on the WooCommerce checkout page.
+         *
+         * @param WC_Checkout $checkout The WooCommerce checkout object.
+         */
+        public static function smsOptInCheckout(WC_Checkout $checkout): void {
             woocommerce_form_field('sms_opt_in', [
                 'type' => 'checkbox',
                 'class' => ['form-row-wide'],
@@ -76,7 +85,12 @@ if( ! class_exists('MobileSasa_BulkSMS')){
             ], $checkout->get_value('sms_opt_in'));
         }
 
-        public static function save_sms_opt_in($order_id) {
+        /**
+         * Save the SMS opt-in preference for the current order.
+         *
+         * @param int $order_id The ID of the order.
+         */
+        public static function saveSmsOptIn(int $order_id): void {
             if (!empty($_POST['sms_opt_in'])) {
                 update_post_meta($order_id, '_sms_opt_in', 'yes');
             } else {
