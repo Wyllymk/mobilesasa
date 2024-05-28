@@ -6,12 +6,12 @@
  * @since 1.0.0
  *
  * @package MobileSasa
- * @subpackage MobileSasa/includes/Pages
+ * @subpackage MobileSasa/includes/Plugin
  *
  * @author Wilson Devops <wilsonkabatha@gmail.com>
  */
 
-namespace Wylly\MobileSasa\Pages;
+namespace Wylly\MobileSasa\Plugin;
 
 // If direct access, then exit the file.
 defined('ABSPATH') || exit;

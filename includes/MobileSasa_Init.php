@@ -26,14 +26,14 @@ if( ! class_exists('MobileSasa_Init')){
         public static function getServices(){
             return [
                 Pages\MobileSasa_Admin::class,
-                Pages\MobileSasa_SendSMS::class,
-                Pages\MobileSasa_BulkSMS::class,
-                Pages\MobileSasa_TransactionalSMS::class,
-                Pages\MobileSasa_CustomOrderStatus::class,
-                Pages\MobileSasa_GetBalance::class,
-                Pages\MobileSasa_Database::class,
                 Base\MobileSasa_Settings::class,
-                Base\MobileSasa_Enqueue::class
+                Base\MobileSasa_Enqueue::class,
+                Plugin\MobileSasa_SendSMS::class,
+                Plugin\MobileSasa_BulkSMS::class,
+                Plugin\MobileSasa_TransactionalSMS::class,
+                Plugin\MobileSasa_CustomOrderStatus::class,
+                Plugin\MobileSasa_GetBalance::class,
+                Plugin\MobileSasa_Database::class,
                 
             ];
         }
