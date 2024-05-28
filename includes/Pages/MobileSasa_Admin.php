@@ -83,6 +83,14 @@ if( ! class_exists('MobileSasa_Admin')){
                     'capability'    => 'manage_options',
                     'menu_slug'     => 'mobilesasa-settings',
                     'callback'      => [self::$callbacks, 'adminSettings'],
+                ],
+                [
+                    'parent_slug'   => 'mobilesasa-sms',
+                    'page_title'    => 'Mobile Sasa History',
+                    'menu_title'    => 'History',
+                    'capability'    => 'manage_options',
+                    'menu_slug'     => 'mobilesasa-history',
+                    'callback'      => [self::$callbacks, 'adminHistory'],
                 ]
             ];
         }
@@ -94,7 +102,8 @@ if( ! class_exists('MobileSasa_Admin')){
             $args = array(
                 array(
                     'option_group'  => 'mobilesasa_admin_group',
-                    'option_name'   => 'mobilesasa_defaults'
+                    'option_name'   => 'mobilesasa_defaults',
+                    'callback'      => [self::$callbacks, 'mobilesasaOptionsGroup'],
                 ),
                 array(
                     'option_group'  => 'mobilesasa_bulk_group',
@@ -148,7 +157,7 @@ if( ! class_exists('MobileSasa_Admin')){
                         'id'            => 'mobilesasa_sender',
                         'title'         => 'Sender ID',
                         'callback'      => [self::$callbacks, 'mobilesasaSender'],
-                        'page'          => 'mobilesasa_bulk_settings',
+                        'page'          => 'mobilesasa-sms',
                         'section'       => 'mobilesasa_index_token',
                         'args'          => array(
                             'label_for' => 'mobilesasa_sender',
@@ -161,7 +170,7 @@ if( ! class_exists('MobileSasa_Admin')){
                         'id'            => 'mobilesasa_token',
                         'title'         => 'API Token',
                         'callback'      => [self::$callbacks, 'mobilesasaToken'],
-                        'page'          => 'mobilesasa_bulk_settings',
+                        'page'          => 'mobilesasa-sms',
                         'section'       => 'mobilesasa_index_token',
                         'args'          => array(
                             'label_for' => 'mobilesasa_token',
@@ -217,7 +226,7 @@ if( ! class_exists('MobileSasa_Admin')){
                             'label_for' => 'transactional_admin_number',
                             'type'      => 'text',
                             'class'     => 'example-text',
-                            'desc'      => __('Admin Number will receive a text on every order placed.','mobilesasa'),
+                            'desc'      => __('Please separate multiple numbers using a comma.','mobilesasa'),
                         )
                     ),
                     array(

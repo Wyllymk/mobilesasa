@@ -7,13 +7,13 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Default to tab-1
 if ($is_update) {
     switch ($current_tab) {
         case 'tab-1':
-            $message = __('Bulk SMS Settings Updated', 'mobilesasa');
+            $message = __('Settings Updated', 'mobilesasa');
             break;
         case 'tab-2':
-            $message = __('Transactional SMS Settings Updated', 'mobilesasa');
+            $message = __('Settings Updated', 'mobilesasa');
             break;
         case 'tab-3':
-            $message = __('OTP Login Settings Updated', 'mobilesasa');
+            $message = __('Updated', 'mobilesasa');
             break;
         default:
             $message = __('Settings Saved', 'mobilesasa');
@@ -47,7 +47,21 @@ function get_all_customers() {
     return array_values($customers);
 }
 
+$customers = get_all_customers();
+// Check if the message was sent successfully
+$message_sent = get_transient('wcbulksms_message_sent');
+if ($message_sent) {
+    delete_transient('wcbulksms_message_sent');
 ?>
+
+<div class="notice notice-success is-dismissible">
+    <p><?php esc_html_e('SMS messages sent successfully.', 'mobilesasa'); ?></p>
+</div>
+<?php
+}
+?>
+
+
 
 <div class="wrap">
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
@@ -76,20 +90,6 @@ function get_all_customers() {
             </form>
             <hr>
 
-            <?php
-                $customers = get_all_customers();
-                // Check if the message was sent successfully
-                $message_sent = get_transient('wcbulksms_message_sent');
-                if ($message_sent) {
-                    delete_transient('wcbulksms_message_sent');
-                ?>
-            <div class="notice notice-success is-dismissible">
-                <p><?php esc_html_e('SMS messages sent successfully.', 'mobilesasa'); ?></p>
-            </div>
-            <?php
-                }
-            ?>
-
             <h3><?php esc_html_e('Available Customers', 'mobilesasa'); ?></h3>
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="send_bulk_sms">
@@ -103,7 +103,7 @@ function get_all_customers() {
                             <th><?php esc_html_e('Send SMS', 'mobilesasa'); ?></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="max-height: 300px; overflow-y: auto;">
                         <?php foreach ($customers as $customer) : ?>
                         <tr>
                             <td><?php echo esc_html($customer['name']); ?></td>
@@ -124,12 +124,24 @@ function get_all_customers() {
                     <?php esc_html_e('Select All Customers', 'mobilesasa'); ?>
                 </label>
                 <br><br>
-
+                <label class="switch">
+                    <input type="checkbox" id="schedule_sms_toggle">
+                    <span class="slider round"></span>
+                </label>
+                <?php esc_html_e('Schedule SMS to be sent later', 'mobilesasa'); ?>
+                <br><br>
+                <label for="schedule_date" id="schedule_date_label" style="display: none;">
+                    <?php esc_html_e('Schedule SMS for', 'mobilesasa'); ?>:
+                </label>
+                <input type="datetime-local" id="schedule_date" name="schedule_date"
+                    min="<?php echo date('Y-m-d\TH:i'); ?>" style="display: none;">
+                <br><br>
                 <button type="submit" class="button button-primary">
                     <?php esc_html_e('Send SMS', 'mobilesasa'); ?>
                 </button>
                 <br><br>
             </form>
+
         </div>
         <div id="tab-2" class="tab-pane <?php echo $current_tab === 'tab-2' ? 'active' : ''; ?>">
             <form action="<?php echo admin_url('options.php'); ?>?tab=tab-2" method="post">

@@ -1,3 +1,4 @@
+// CHECKBOX JS
 document.getElementById("select_all").addEventListener("change", function (e) {
   let checkboxes = document.querySelectorAll('input[name="send_sms[]"]');
   for (let checkbox of checkboxes) {
@@ -5,6 +6,7 @@ document.getElementById("select_all").addEventListener("change", function (e) {
   }
 });
 
+// TAB JS
 window.addEventListener("load", function () {
   // Store Tabs variables
   const tabs = document.querySelectorAll("ul.nav-tabs > li");
@@ -54,3 +56,35 @@ window.addEventListener("load", function () {
     window.history.replaceState(null, null, url.toString());
   }
 });
+
+// DATETIME-LOCAL JS
+document.addEventListener("DOMContentLoaded", function () {
+  const scheduleSmsToggle = document.getElementById("schedule_sms_toggle");
+  const scheduleDateLabel = document.getElementById("schedule_date_label");
+  const scheduleDateInput = document.getElementById("schedule_date");
+
+  scheduleSmsToggle.addEventListener("change", function () {
+    if (scheduleSmsToggle.checked) {
+      scheduleDateLabel.style.display = "inline";
+      scheduleDateInput.style.display = "inline";
+    } else {
+      scheduleDateLabel.style.display = "none";
+      scheduleDateInput.style.display = "none";
+    }
+  });
+});
+
+// TIME PRE-FILL
+// Get the current date and time
+var now = new Date();
+
+// Format the date and time in the required format (YYYY-MM-DDTHH:MM)
+var year = now.getFullYear();
+var month = ("0" + (now.getMonth() + 1)).slice(-2);
+var day = ("0" + now.getDate()).slice(-2);
+var hours = ("0" + now.getHours()).slice(-2);
+var minutes = ("0" + now.getMinutes()).slice(-2);
+var currentDateTime = year + "-" + month + "-" + day + "T" + hours + ":" + minutes;
+
+// Set the value of the input element to the current date and time
+document.getElementById("schedule_date").value = currentDateTime;

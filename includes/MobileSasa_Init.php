@@ -29,6 +29,9 @@ if( ! class_exists('MobileSasa_Init')){
                 Pages\MobileSasa_SendSMS::class,
                 Pages\MobileSasa_BulkSMS::class,
                 Pages\MobileSasa_TransactionalSMS::class,
+                Pages\MobileSasa_CustomOrderStatus::class,
+                Pages\MobileSasa_GetBalance::class,
+                Pages\MobileSasa_Database::class,
                 Base\MobileSasa_Settings::class,
                 Base\MobileSasa_Enqueue::class
                 

@@ -9,8 +9,19 @@ $message = $is_update ? __('Credentials Updated', 'mobilesasa') : __('Settings S
 
 if ($is_update) {
     // Add a settings updated message with the class of "updated"
-    add_settings_error('github_actions_messages', 'ga_message', $message, 'updated');
+    add_settings_error('mobilesasa_messages', 'ga_message', $message, 'updated');
 }
+
+// Check if the message was sent successfully
+$message_sent = get_transient('mobilesasa_balance_response');
+if ($message_sent) {
+    delete_transient('mobilesasa_balance_response');
+?>
+<div class="notice notice-success is-dismissible">
+    <p><strong><?php esc_html_e('Balance retrieved successfully.', 'mobilesasa'); ?></strong></p>
+</div>
+<?php
+    }
 ?>
 
 <div class="wrap">
@@ -18,8 +29,7 @@ if ($is_update) {
 
     <?php if ( ! get_option('hide-ga-welcome', false)) { ?>
     <div class="ga-welcome-panel welcome-panel">
-        <a href="<?php echo admin_url('admin.php?page=mobilesasa-sms&mobilesasa-sms-welcome=0')?>"
-            class="ga-welcome-panel-close welcome-panel-close" aria-label="Dismiss the welcome panel">Dismiss</a>
+
         <div class="ga-welcome-panel-content">
             <h3><?php _e( "Thanks for installing MobileSasa SMS" ); ?></h3>
 
@@ -45,11 +55,11 @@ if ($is_update) {
     </div>
     <?php } ?>
 
-    <?php settings_errors('github_actions_messages'); ?>
+    <?php settings_errors('mobilesasa_messages'); ?>
 
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#tab-1">Manage Settings</a></li>
-        <li class=""><a href="#tab-2">About</a></li>
+        <li class="active"><a href="#tab-1" id="tab-link-1">Manage Settings</a></li>
+        <li class=""><a href="#tab-2" id="tab-link-2">About</a></li>
     </ul>
 
     <div class="tab-content">
@@ -66,6 +76,38 @@ if ($is_update) {
                 submit_button('Save Credentials');
                 ?>
             </form>
+            <hr>
+            <h3><?php esc_html_e('Get Balance', 'mobilesasa'); ?></h3>
+            <div class="balance-container">
+                <h3 class="balance-label"><?php esc_html_e('Balance:', 'mobilesasa'); ?></h3>
+                <?php
+                global $wpdb;
+
+                // Define the table name
+                $table_name = $wpdb->prefix . 'mobilesasa';
+
+                // Retrieve the latest balance entry from the database
+                $balance_row = $wpdb->get_row("SELECT balance FROM $table_name ORDER BY created_at DESC LIMIT 1");
+
+                if ($balance_row) {
+                    $balance = $balance_row->balance;
+                    echo '<div class="balance-value">' . esc_html($balance) . '</div>';
+                } else {
+                    echo '<div class="balance-value">' . esc_html__('N/A', 'mobilesasa') . '</div>'; // Display default value if balance response is not available
+                }
+                ?>
+            </div>
+
+
+            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <input type="hidden" name="action" value="get_balance">
+                <?php wp_nonce_field('get_balance_nonce'); ?>
+
+                <button type="submit" class="button button-primary">
+                    <?php esc_html_e('Get Balance', 'mobilesasa'); ?>
+                </button>
+                <br><br>
+            </form>
         </div>
 
         <div id="tab-2" class="tab-pane">
@@ -73,19 +115,51 @@ if ($is_update) {
             <p><b>About the plugin</b></p>
 
             <p>
-                The GitHub token is required for accessing private repositories. If your GitHub repository is public,
-                you do not need to provide a token. However, for private repositories, a GitHub access token with the
-                'repo'
-                scope is necessary for authentication.
+                The Mobile Sasa SMS Plugin is a powerful tool that helps you stay connected with your customers
+                throughout their shopping journey. Built to seamlessly integrate with WooCommerce, this plugin leverages
+                the Mobile Sasa SMS API to deliver timely and personalized SMS notifications to your customers and
+                admins.
             </p>
-
+            <p><b>Stay Informed, Stay Engaged</b></p>
             <p>
-                To set up webhooks (for automatic updating of your theme/plugin) and clone private repositories, ensure
-                your GitHub token has the required
-                permissions.
-                You can manage these permissions in your GitHub repository settings.
-                <a href="https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes"
-                    target="_blank" rel="noopener noreferrer">Learn more about GitHub scopes and permissions</a>.
+                With the Mobile Sasa SMS Plugin, you can ensure that your customers are always up-to-date with the
+                status of their orders. From the moment an order is placed to the moment it's delivered (and even
+                beyond), this plugin keeps your customers informed every step of the way. Receive notifications for
+                various order events, including:
+            </p>
+            <ul>
+                <li> - Order Draft</li>
+                <li> - Order Pending</li>
+                <li> - Order On Hold</li>
+                <li> - Order Processing</li>
+                <li> - Order Completed</li>
+                <li> - Order Failed</li>
+                <li> - Order Ready for Pickup</li>
+                <li> - Order Failed Delivery</li>
+                <li> - Order Returned</li>
+                <li> - Order Refunded</li>
+            </ul>
+            <p>Not only does this plugin keep your customers in the loop, but it also keeps you, the store owner,
+                informed. Receive admin notifications whenever an order is placed or its status changes, allowing you to
+                stay on top of your business operations.
+            </p>
+            <p><b>Customizable and Efficient</b></p>
+            <p>The Mobile Sasa SMS Plugin offers a high degree of customization, allowing you to tailor the SMS messages
+                to suit your brand's voice and messaging. Easily customize the messages with dynamic shortcodes that
+                automatically populate order details, such as customer name, order ID, total amount, and phone
+                number.<br><br>
+                Additionally, the plugin's seamless integration with the Mobile Sasa SMS API ensures efficient and
+                reliable SMS delivery, ensuring that your messages reach your customers and admins without any hiccups.
+            </p>
+            <p><b>Stay Connected, Stay Successful</b></p>
+            <p>
+                This plugin also provides a simple way to send SMS messages to your customers and admins. Simply
+                configure your SMS credentials and enter the message content and recipients, and the plugin will
+                handle the rest.
+            </p>
+            <p>
+                Whether you're a small business or a large enterprise, the Mobile Sasa SMS Plugin is a powerful tool
+                that can help you stay connected with your customers and make informed decisions about your business.
             </p>
         </div>
 

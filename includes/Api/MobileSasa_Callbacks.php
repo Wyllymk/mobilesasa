@@ -30,6 +30,11 @@ if( ! class_exists('MobileSasa_Callbacks')){
                 require_once (MS_PLUGIN_PATH . 'templates/mobilesasa_settings.php');
             }
         }
+        public static function adminHistory(){
+            if(file_exists(MS_PLUGIN_PATH . 'templates/mobilesasa_history.php')){
+                require_once (MS_PLUGIN_PATH . 'templates/mobilesasa_history.php');
+            }
+        }
 
         public static function mobilesasaOptionsGroup($input){
             return $input;
