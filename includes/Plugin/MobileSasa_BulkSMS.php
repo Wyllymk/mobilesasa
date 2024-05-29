@@ -44,9 +44,7 @@ if (!class_exists('MobileSasa_BulkSMS')) {
             $options = get_option('mobilesasa_bulk_options');
             $message = $options['bulk_message'] ?? '';
             $is_enabled = $options['bulk_sms_enable'] ?? '0';
-        
-            error_log(print_r($_POST, true));
-        
+                
             $schedule_sms = isset($_POST['schedule_sms']) ? sanitize_text_field($_POST['schedule_sms']) : '';
             $schedule_date = isset($_POST['schedule_date']) ? sanitize_text_field($_POST['schedule_date']) : null;
         
@@ -69,9 +67,21 @@ if (!class_exists('MobileSasa_BulkSMS')) {
                     ),
                     array('%s', '%s', '%s', '%s')
                 );
-        
+
+                // Calculate the timestamp for WP-Cron event
+                // $timestamp = strtotime($schedule_date);
+
+                $timezone = 'Africa/Nairobi'; // Replace with your desired timezone
+
+                $timestamp = self::convert_to_timestamp($schedule_date, $timezone);
+
+                if ($timestamp === false) {
+                    error_log( 'Invalid date string.');
+                } else {
+                    error_log( "The timestamp for $schedule_date in $timezone is: $timestamp");
+                }
+
                 // Schedule WP-Cron event
-                $timestamp = strtotime($schedule_date);
                 if (!wp_next_scheduled('mobilesasa_send_scheduled_sms', array($wpdb->insert_id))) {
                     wp_schedule_single_event($timestamp, 'mobilesasa_send_scheduled_sms', array($wpdb->insert_id));
                 }
@@ -93,9 +103,7 @@ if (!class_exists('MobileSasa_BulkSMS')) {
                     MobileSasa_SendSMS::init($senderid, $apitoken);
         
                     if (!empty($_POST['send_sms'])) {
-                        
-                        error_log(print_r($_POST, true));
-                        
+                                                
                         $phones = array_map('sanitize_text_field', $_POST['send_sms']);
                         $cleaned_phones = MobileSasa_SendSMS::clean_phone($phones);
         
@@ -115,9 +123,36 @@ if (!class_exists('MobileSasa_BulkSMS')) {
                 }
             }
         }
-        
-        
+
+        /**
+         * Convert a date string to a Unix timestamp in a specific timezone.
+         *
+         * @param string $date_string The date string to convert (e.g., '2024-05-29T19:20').
+         * @param string $timezone The timezone identifier (e.g., 'UTC', 'America/New_York').
+         *
+         * @return int|false The Unix timestamp on success, false on failure.
+         */
+        public static function convert_to_timestamp($date_string, $timezone) {
+            
+            $tz = new \DateTimeZone($timezone);
+            $date = \DateTime::createFromFormat('Y-m-d\TH:i', $date_string, $tz);
+
+            if ($date === false) {
+                return false;
+            }
+
+            $timestamp = $date->getTimestamp();
+
+            // Adjust the timestamp based on your local timezone offset
+            $local_tz = new \DateTimeZone('Africa/Nairobi'); // Replace with your local timezone
+            $local_dt = new \DateTime('@' . $timestamp);
+            $local_dt->setTimezone($local_tz);
+
+            return $local_dt->getTimestamp();
+        }
+
         public static function send_scheduled_sms($scheduled_message_id) {
+            
             global $wpdb;
             $table_name = $wpdb->prefix . 'mobilesasa_scheduled_messages';
             $scheduled_message = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $scheduled_message_id), ARRAY_A);

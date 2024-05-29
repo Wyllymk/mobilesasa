@@ -43,7 +43,6 @@ if (!class_exists('MobileSasa_SendSMS')) {
         public static function send_sms(array $phones, string $message): ?string {
             $multiple_numbers = count($phones) > 1;
             $url = $multiple_numbers ? 'https://api.mobilesasa.com/v1/send/bulk' : 'https://api.mobilesasa.com/v1/send/message';
-            error_log($url);
             $phone_param = $multiple_numbers ? 'phones' : 'phone'; 
             
             // Convert array of phones to a comma-separated string
