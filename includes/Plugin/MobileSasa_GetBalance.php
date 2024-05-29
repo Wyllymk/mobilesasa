@@ -26,7 +26,7 @@ if (!class_exists('MobileSasa_GetBalance')) {
          * Register the necessary hooks for the WooCommerce Bulk SMS functionality.
          */
         public static function register(): void {
-            add_action('admin_post_get_balance', [self::class, 'handleGetBalance']);
+            add_action('admin_post_get_balance', [self::class, 'handle_get_balance']);
         }
 
         /**
@@ -41,7 +41,7 @@ if (!class_exists('MobileSasa_GetBalance')) {
         /**
          * Handle the get balance request.
          */
-        public static function handleGetBalance(): void {
+        public static function handle_get_balance(): void {
 
             if (!current_user_can('manage_options') || !check_admin_referer('get_balance_nonce')) {
                 wp_die(__('You do not have sufficient permissions to access this page.', 'mobilesasa'));
@@ -53,7 +53,7 @@ if (!class_exists('MobileSasa_GetBalance')) {
             self::init($api_token);
 
             // Get the balance
-            $status = self::getBalance();
+            $status = self::get_balance();
 
             // Redirect to the same page with a status parameter
             wp_redirect(add_query_arg('status', $status ? 'success' : 'failed', wp_get_referer()));
@@ -65,7 +65,7 @@ if (!class_exists('MobileSasa_GetBalance')) {
          *
          * @return int A status code indicating the success (1) or failure (0) of the operation.
          */
-        public static function getBalance(): int {
+        public static function get_balance(): int {
 
             $status = 0;
         

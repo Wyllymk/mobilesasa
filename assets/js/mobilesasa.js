@@ -1,90 +1,195 @@
 // CHECKBOX JS
-document.getElementById("select_all").addEventListener("change", function (e) {
-  let checkboxes = document.querySelectorAll('input[name="send_sms[]"]');
-  for (let checkbox of checkboxes) {
-    checkbox.checked = e.target.checked;
-  }
-});
+jQuery(document).ready(function ($) {
+  $("#select_all").on("change", function () {
+    let checkboxes = $('input[name="send_sms[]"]');
+    checkboxes.prop("checked", $(this).prop("checked"));
+  });
 
-// TAB JS
-window.addEventListener("load", function () {
-  // Store Tabs variables
-  const tabs = document.querySelectorAll("ul.nav-tabs > li");
+  // TAB JS
+  const tabs = $("ul.nav-tabs > li");
 
-  // Define the switchTab function
   const switchTab = (event) => {
     event.preventDefault();
 
-    document.querySelector("ul.nav-tabs li.active").classList.remove("active");
-    document.querySelector(".tab-pane.active").classList.remove("active");
+    $("ul.nav-tabs li.active").removeClass("active");
+    $(".tab-pane.active").removeClass("active");
 
-    const clickedTab = event.currentTarget;
-    const anchor = event.target;
-    let activePaneID = anchor.getAttribute("href");
+    const clickedTab = $(event.currentTarget);
+    const anchor = clickedTab.find("a");
+    const activePaneID = anchor.attr("href");
 
-    clickedTab.classList.add("active");
-    document.querySelector(activePaneID).classList.add("active");
+    clickedTab.addClass("active");
+    $(activePaneID).addClass("active");
 
-    // Save the active tab to local storage
     localStorage.setItem("activeTab", activePaneID);
 
-    // Update the URL with the current tab
     const url = new URL(window.location);
     url.searchParams.set("tab", activePaneID.substring(1)); // Remove the '#' from the ID
     window.history.replaceState(null, null, url.toString());
   };
 
-  // Attach the event listener to each tab
-  for (let i = 0; i < tabs.length; i++) {
-    tabs[i].addEventListener("click", switchTab);
-  }
+  tabs.on("click", switchTab);
 
-  // Check if there's an active tab stored in local storage
   const activeTab = localStorage.getItem("activeTab");
 
   if (activeTab) {
-    document.querySelector("ul.nav-tabs li.active").classList.remove("active");
-    document.querySelector(".tab-pane.active").classList.remove("active");
+    $("ul.nav-tabs li.active").removeClass("active");
+    $(".tab-pane.active").removeClass("active");
 
-    const activeTabElement = document.querySelector(`ul.nav-tabs a[href="${activeTab}"]`);
-    activeTabElement.parentElement.classList.add("active");
-    document.querySelector(activeTab).classList.add("active");
+    const activeTabElement = $(`ul.nav-tabs a[href="${activeTab}"]`);
+    activeTabElement.parent().addClass("active");
+    $(activeTab).addClass("active");
 
-    // Update the URL with the active tab
     const url = new URL(window.location);
     url.searchParams.set("tab", activeTab.substring(1)); // Remove the '#' from the ID
     window.history.replaceState(null, null, url.toString());
   }
-});
 
-// DATETIME-LOCAL JS
-document.addEventListener("DOMContentLoaded", function () {
-  const scheduleSmsToggle = document.getElementById("schedule_sms_toggle");
-  const scheduleDateLabel = document.getElementById("schedule_date_label");
-  const scheduleDateInput = document.getElementById("schedule_date");
+  // DATETIME-LOCAL JS
+  const scheduleSmsToggle = $("#schedule_sms_toggle");
+  const scheduleDateLabel = $("#schedule_date_label");
+  const scheduleDateInput = $("#schedule_date");
 
-  scheduleSmsToggle.addEventListener("change", function () {
-    if (scheduleSmsToggle.checked) {
-      scheduleDateLabel.style.display = "inline";
-      scheduleDateInput.style.display = "inline";
+  scheduleSmsToggle.on("change", function () {
+    if (scheduleSmsToggle.prop("checked")) {
+      scheduleDateLabel.show();
+      scheduleDateInput.show();
     } else {
-      scheduleDateLabel.style.display = "none";
-      scheduleDateInput.style.display = "none";
+      scheduleDateLabel.hide();
+      scheduleDateInput.hide();
+    }
+  });
+
+  // TIME PRE-FILL
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = ("0" + (now.getMonth() + 1)).slice(-2);
+  const day = ("0" + now.getDate()).slice(-2);
+  const hours = ("0" + now.getHours()).slice(-2);
+  const minutes = ("0" + now.getMinutes()).slice(-2);
+  const currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+  $("#schedule_date").val(currentDateTime);
+
+  // RECIPIENTS JS
+  window.toggleRecipient = function (id) {
+    const recipientsDiv = $(`#recipients-${id}`);
+    recipientsDiv.toggle();
+  };
+
+  window.toggleRecipients = function (id, type) {
+    const recipientsDiv = $(`#recipients-${id}-${type}`);
+    recipientsDiv.toggle();
+  };
+
+  // DELIVERY STATUS CHECK
+  $(".delivery-status-btn").on("click", function (e) {
+    e.preventDefault();
+
+    var button = $(this);
+    var row = button.closest("tr");
+    var messageId = row.data("message-id");
+
+    button.prop("disabled", true);
+    button.text("Checking...");
+
+    $.ajax({
+      url: mobilesasa.ajaxurl,
+      type: "POST",
+      data: {
+        action: "delivery_status_sms",
+        message_id: messageId,
+        _ajax_nonce: mobilesasa.nonce_delivery_status,
+      },
+      success: function (response) {
+        if (response.success) {
+          alert(response.data.message);
+          location.reload(); // Reload the page to show updated statuses
+        } else {
+          alert("Failed to check delivery status.");
+        }
+        button.prop("disabled", false);
+        button.text("Check Status");
+      },
+      error: function () {
+        alert("Failed to check delivery status.");
+        button.prop("disabled", false);
+        button.text("Check Status");
+      },
+    });
+  });
+
+  // SEND SMS JS
+  $("#send_sms_button").on("click", function (e) {
+    e.preventDefault();
+
+    let button = $(this);
+    button.prop("disabled", true);
+    button.text("Sending...");
+
+    var recipients = []; // Initialize an empty array for recipients
+    $("input[name='send_sms[]']:checked").each(function () {
+      recipients.push($(this).val()); // Push each checked value into the array
+    });
+    var scheduleSms = $("#schedule_sms_toggle").prop("checked") ? "yes" : "no";
+    var scheduleTime = $("#schedule_date").val();
+
+    $.ajax({
+      url: mobilesasa.ajaxurl,
+      type: "POST",
+      data: {
+        action: "send_sms",
+        recipients: recipients,
+        schedule_sms: scheduleSms,
+        schedule_time: scheduleTime,
+        _ajax_nonce: mobilesasa.nonce_send_sms,
+      },
+      success: function (response) {
+        if (response.success) {
+          alert(response.data.message);
+          // Optionally, you can reset the form after successful submission
+          $("#send-sms-form")[0].reset();
+        } else {
+          alert("Failed to send SMS.");
+        }
+        button.prop("disabled", false);
+        button.text("Send SMS");
+      },
+      error: function () {
+        alert("Failed to send SMS.");
+        button.prop("disabled", false);
+        button.text("Send SMS");
+      },
+    });
+  });
+
+  // Function to handle deleting scheduled message
+
+  $(".delete-btn").on("click", function () {
+    if (confirm("Are you sure you want to delete this scheduled message?")) {
+      var messageId = $(this).data("message-id");
+
+      $.ajax({
+        url: mobilesasa.ajaxurl,
+        type: "POST",
+        data: {
+          action: "delete_scheduled_message",
+          message_id: messageId,
+          _ajax_nonce: mobilesasa.nonce_delete_message,
+        },
+        success: function (response) {
+          if (response.success) {
+            alert(response.data.message);
+            // Remove the row from the table
+            $('tr[data-message-id="' + messageId + '"]').remove();
+          } else {
+            alert("Failed to delete scheduled message.");
+          }
+        },
+        error: function () {
+          alert("Failed to delete scheduled message.");
+        },
+      });
     }
   });
 });
-
-// TIME PRE-FILL
-// Get the current date and time
-var now = new Date();
-
-// Format the date and time in the required format (YYYY-MM-DDTHH:MM)
-var year = now.getFullYear();
-var month = ("0" + (now.getMonth() + 1)).slice(-2);
-var day = ("0" + now.getDate()).slice(-2);
-var hours = ("0" + now.getHours()).slice(-2);
-var minutes = ("0" + now.getMinutes()).slice(-2);
-var currentDateTime = year + "-" + month + "-" + day + "T" + hours + ":" + minutes;
-
-// Set the value of the input element to the current date and time
-document.getElementById("schedule_date").value = currentDateTime;

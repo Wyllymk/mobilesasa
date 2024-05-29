@@ -48,14 +48,23 @@ function get_all_customers() {
 }
 
 $customers = get_all_customers();
+
 // Check if the message was sent successfully
 $message_sent = get_transient('wcbulksms_message_sent');
+$scheduled_messages = get_transient('wcbulksms_message_scheduled');
+
 if ($message_sent) {
     delete_transient('wcbulksms_message_sent');
-?>
-
+    ?>
 <div class="notice notice-success is-dismissible">
-    <p><?php esc_html_e('SMS messages sent successfully.', 'mobilesasa'); ?></p>
+    <p><b><?php esc_html_e('SMS messages sent successfully.', 'mobilesasa'); ?></b></p>
+</div>
+<?php
+} elseif ($scheduled_messages) {
+    delete_transient('wcbulksms_message_scheduled');
+    ?>
+<div class="notice notice-info is-dismissible">
+    <p><b><?php esc_html_e('SMS messages scheduled for sending.', 'mobilesasa'); ?></b></p>
 </div>
 <?php
 }
@@ -94,7 +103,7 @@ if ($message_sent) {
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="send_bulk_sms">
                 <?php wp_nonce_field('send_bulk_sms_nonce'); ?>
-                <table class="wp-list-table widefat fixed striped">
+                <table class="wp-list-table widefat fixed striped custom-table">
                     <thead>
                         <tr>
                             <th><?php esc_html_e('Name', 'mobilesasa'); ?></th>
@@ -125,7 +134,7 @@ if ($message_sent) {
                 </label>
                 <br><br>
                 <label class="switch">
-                    <input type="checkbox" id="schedule_sms_toggle">
+                    <input type="checkbox" id="schedule_sms_toggle" name="schedule_sms">
                     <span class="slider round"></span>
                 </label>
                 <?php esc_html_e('Schedule SMS to be sent later', 'mobilesasa'); ?>

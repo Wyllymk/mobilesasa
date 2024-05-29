@@ -34,22 +34,22 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
          */
         public static function register(): void {
 
-            self::loadOptions();
-            add_action('woocommerce_order_status_changed', [self::class, 'wcOrderStatus'], 10, 3);
+            self::load_options();
+            add_action('woocommerce_order_status_changed', [self::class, 'order_status'], 10, 3);
             // Hook into order status changes
-			add_action( 'woocommerce_store_api_checkout_update_order_meta', [self::class, 'wcTrackOrderDraftDuration'] );
+			add_action( 'woocommerce_store_api_checkout_update_order_meta', [self::class, 'track_order_draft_duration'] );
             // Hook into the cron event to send the SMS
-			add_action( 'send_draft_order_sms', [self::class,'sendDraftOrderSmsCallback'], 10, 1 );
+			add_action( 'send_draft_order_sms', [self::class,'send_draft_order_sms_callback'], 10, 1 );
 			// Hook the function to run when WordPress initializes
-			add_action('init', [self::class, 'scheduleDeleteCustomPostMeta']);
+			add_action('init', [self::class, 'schedule_delete_custom_postMeta']);
 			// Hook the function to the scheduled event
-			add_action('delete_custom_post_meta_event', [self::class, 'deleteCustomPostMeta']);
+			add_action('delete_custom_post_meta_event', [self::class, 'delete_custom_postMeta']);
         }
 
         /**
          * Load options from the database
          */
-        private static function loadOptions(): void {
+        private static function load_options(): void {
 
             // Retrieve the entire serialized array from the database
             $serialized_options = get_option('mobilesasa_transactional_options');
@@ -69,24 +69,24 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
         /**
          * Handles the order status change and sends SMS notifications.
          *
-         * @param int $orderId The ID of the order.
-         * @param string $oldStatus The previous order status.
-         * @param string $newStatus The new order status.
+         * @param int $order_id The ID of the order.
+         * @param string $old_status The previous order status.
+         * @param string $new_status The new order status.
          */
-        public static function wcOrderStatus(int $orderId, string $oldStatus, string $newStatus): void {
+        public static function order_status(int $order_id, string $old_status, string $new_status): void {
 
-            $transactionalSmsEnable = self::$options['transactional_sms_enable'] ?? '';
-            if ($transactionalSmsEnable && $transactionalSmsEnable === '1') {
+            $transactional_sms_enable = self::$options['transactional_sms_enable'] ?? '';
+            if ($transactional_sms_enable && $transactional_sms_enable === '1') {
                 // Get the default sender ID and API token for the SMS service
-                $defaultOptions = get_option('mobilesasa_defaults');
-                $senderId = $defaultOptions['mobilesasa_sender'] ?? '';
-                $apiToken = $defaultOptions['mobilesasa_token'] ?? '';
+                $default_options = get_option('mobilesasa_defaults');
+                $sender_id = $default_options['mobilesasa_sender'] ?? '';
+                $api_token = $default_options['mobilesasa_token'] ?? '';
 
                 // Initialize the SMS sending class with the sender ID and API token
-                MobileSasa_SendSMS::init($senderId, $apiToken);
+                MobileSasa_SendSMS::init($sender_id, $api_token);
 
                 // Order details
-                $order = wc_get_order($orderId);
+                $order = wc_get_order($order_id);
                 $phone = $order->get_billing_phone();
                 $name = $order->get_billing_first_name();
                 $total = $order->get_total();
@@ -108,30 +108,30 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
 
                 // Check each status and send SMS if enabled
                 foreach ($statuses as $status => $option_prefix) {
-                    if ($newStatus === $status && self::$options["{$option_prefix}_enable"] === '1' && !empty(self::$options["{$option_prefix}_message"])) {
+                    if ($new_status === $status && self::$options["{$option_prefix}_enable"] === '1' && !empty(self::$options["{$option_prefix}_message"])) {
                         $message = str_replace(
                             ['{name}', '{orderid}', '{total}', '{phone}'],
-                            [$name, $orderId, $total, $phone],
+                            [$name, $order_id, $total, $phone],
                             self::$options["{$option_prefix}_message"]
                         );
-                        MobileSasa_SendSMS::wcSendExpressPostSMS(MobileSasa_SendSMS::wcCleanPhone($phone), $message);
+                        MobileSasa_SendSMS::wc_send_sms(MobileSasa_SendSMS::wc_clean_phone($phone), $message);
                     }
                 }
 
-                $$adminStatuses = ['pending', 'on-hold', 'processing'];
-                $adminPhoneNumber = self::$options['transactional_admin_number'] ?? '';
+                $$admin_statuses = ['pending', 'on-hold', 'processing'];
+                $admin_phone_number = self::$options['transactional_admin_number'] ?? '';
                 $has_admin_logged = get_post_meta($order->get_id(), '_admin_sms_sent', true);
                 
                 if (!$has_admin_logged) {
                     // Check each status and send SMS if enabled
-                    foreach ($adminStatuses as $status) {
-                        if ($newStatus === $status && self::$options["admin_sms_enable"] === '1' && !empty(self::$options["admin_sms_message"])) {
+                    foreach ($admin_statuses as $status) {
+                        if ($new_status === $status && self::$options["admin_sms_enable"] === '1' && !empty(self::$options["admin_sms_message"])) {
                             $message = str_replace(
-                                ['{name}', '{orderid}', '{total}', '{phone}'],
-                                [$name, $orderId, $total, $phone],
+                                ['{name}', '{order_id}', '{total}', '{phone}'],
+                                [$name, $order_id, $total, $phone],
                                 self::$options["admin_sms_message"]
                             );
-                            MobileSasa_SendSMS::wcSendExpressPostSMS(MobileSasa_SendSMS::wcCleanPhone($adminPhoneNumber), $message);
+                            MobileSasa_SendSMS::wc_send_sms(MobileSasa_SendSMS::wc_clean_phone($admin_phone_number), $message);
                         }
                     }
                 }
@@ -146,7 +146,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
          *
          * @param \WC_Order $order The WooCommerce order object.
          */
-        public static function wcTrackOrderDraftDuration(\WC_Order  $order ): void {
+        public static function track_order_draft_duration(\WC_Order  $order ): void {
 			// Check for flag already set or not.
 			$has_draft_logged = get_post_meta( $order->get_id(), '_draft_duration_logged', true );
 			
@@ -163,40 +163,40 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
         /**
          * Sends SMS notification for draft orders after a specified duration.
          *
-         * @param int $orderId The ID of the order.
+         * @param int $order_id The ID of the order.
          */
-        public static function sendDraftOrderSmsCallback(int $orderId): void {
+        public static function send_draft_order_sms_callback(int $order_id): void {
 
-			$has_sms_logged = get_post_meta( $orderId, '_sms_sent_logged', true );
+			$has_sms_logged = get_post_meta( $order_id, '_sms_sent_logged', true );
 			
-			$order = wc_get_order( $orderId );
+			$order = wc_get_order( $order_id );
 			
 			if($order->has_status( 'checkout-draft' ) && ! $has_sms_logged ){
 
-                $transactionalSmsEnable = self::$options['transactional_sms_enable'] ?? '';
+                $transactional_sms_enable = self::$options['transactional_sms_enable'] ?? '';
                 
-                if ($transactionalSmsEnable && $transactionalSmsEnable === '1') {
+                if ($transactional_sms_enable && $transactional_sms_enable === '1') {
                     // Get the default sender ID and API token for the SMS service
-                    $defaultOptions = get_option('mobilesasa_defaults');
-                    $senderId = $defaultOptions['mobilesasa_sender'] ?? '';
-                    $apiToken = $defaultOptions['mobilesasa_token'] ?? '';
+                    $default_options = get_option('mobilesasa_defaults');
+                    $sender_id = $default_options['mobilesasa_sender'] ?? '';
+                    $api_token = $default_options['mobilesasa_token'] ?? '';
 
                     // Initialize the SMS sending class with the sender ID and API token
-                    MobileSasa_SendSMS::init($senderId, $apiToken);
+                    MobileSasa_SendSMS::init($sender_id, $api_token);
 
                     // Order details
-                    $order = wc_get_order($orderId);
+                    $order = wc_get_order($order_id);
                     $phone = $order->get_billing_phone();
                     $name = $order->get_billing_first_name();
                     $total = $order->get_total();
 
                     if (self::$options["draft_sms_enable"] === '1' && !empty(self::$options["draft_sms_message"])) {
                         $message = str_replace(
-                            ['{name}', '{orderid}', '{total}', '{phone}'],
-                            [$name, $orderId, $total, $phone],
+                            ['{name}', '{order_id}', '{total}', '{phone}'],
+                            [$name, $order_id, $total, $phone],
                             self::$options["draft_sms_message"]
                         );
-                        MobileSasa_SendSMS::wcSendExpressPostSMS(MobileSasa_SendSMS::wcCleanPhone($phone), $message);
+                        MobileSasa_SendSMS::wc_send_sms(MobileSasa_SendSMS::wc_clean_phone($phone), $message);
                     }
                     // Set flag to prevent duplicate logging
 					update_post_meta( $order->get_id(), '_sms_sent_logged', true );
@@ -214,7 +214,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
         /**
          * Schedules a periodic event to delete custom post meta.
          */
-        public static function scheduleDeleteCustomPostMeta(): void {
+        public static function schedule_delete_custom_postMeta(): void {
 			// Check if the scheduled event already exists
 			if (!wp_next_scheduled('delete_custom_post_meta_event')) {
 				// Schedule the event to run once every 2 hours
@@ -225,7 +225,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
         /**
          * Deletes specific custom post meta data created by the plugin.
          */
-        private static function deleteCustomPostMeta(): void {
+        private static function delete_custom_postMeta(): void {
 			// Define the post meta keys created by your plugin
 			$meta_keys = array(
 				'_admin_sms_sent',

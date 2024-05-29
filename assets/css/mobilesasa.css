@@ -170,3 +170,44 @@ input:checked + .slider:before {
 .button-container {
   text-align: center;
 }
+
+/* 
+* History css 
+*/
+.table-container {
+  width: 100%;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.custom-table th {
+  background-color: #a7dbb0;
+}
+
+.show-more {
+  cursor: pointer;
+  color: #0073aa;
+  text-decoration: underline;
+}
+
+.show-more:hover {
+  color: #005177;
+}
+
+.td-flex {
+  display: flex;
+  justify-content: space-between;
+}

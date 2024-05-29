@@ -26,38 +26,38 @@ if (!class_exists('MobileSasa_CustomOrderStatus')) {
          * Registers the necessary hooks and initializes the class.
          */
         public static function register(): void {
-            self::registerCustomOrderStatusHooks();
+            self::register_custom_order_status_hooks();
         }
 
         /**
          * Register the hooks for adding custom order statuses.
          */
-        private static function registerCustomOrderStatusHooks(): void {
-            add_action('init', [self::class, 'addCustomOrderStatusReadyForPickup']);
-            add_action('init', [self::class, 'addCustomOrderStatusFailedDelivery']);
-            add_action('init', [self::class, 'addCustomOrderStatusReturned']);
-            add_action('wc_order_statuses', [self::class, 'addCustomOrderStatusesToDropdown'], 10, 1);
+        private static function register_custom_order_status_hooks(): void {
+            add_action('init', [self::class, 'add_custom_order_status_ready_for_pickup']);
+            add_action('init', [self::class, 'add_custom_order_status_failed_delivery']);
+            add_action('init', [self::class, 'add_custom_order_status_returned']);
+            add_action('wc_order_statuses', [self::class, 'add_custom_order_statuses_to_dropdown'], 10, 1);
         }
 
         /**
          * Add the custom order status "Ready for Pickup" to WooCommerce.
          */
-        public static function addCustomOrderStatusReadyForPickup(): void {
-            self::registerCustomOrderStatus('wc-ready-for-pickup', 'Ready for Pickup');
+        public static function add_custom_order_status_ready_for_pickup(): void {
+            self::register_custom_order_status('wc-ready-for-pickup', 'Ready for Pickup');
         }
 
         /**
          * Add the custom order status "Failed Delivery" to WooCommerce.
          */
-        public static function addCustomOrderStatusFailedDelivery(): void {
-            self::registerCustomOrderStatus('wc-failed-delivery', 'Failed Delivery');
+        public static function add_custom_order_status_failed_delivery(): void {
+            self::register_custom_order_status('wc-failed-delivery', 'Failed Delivery');
         }
 
         /**
          * Add the custom order status "Returned" to WooCommerce.
          */
-        public static function addCustomOrderStatusReturned(): void {
-            self::registerCustomOrderStatus('wc-returned', 'Returned');
+        public static function add_custom_order_status_returned(): void {
+            self::register_custom_order_status('wc-returned', 'Returned');
         }
 
         /**
@@ -66,7 +66,7 @@ if (!class_exists('MobileSasa_CustomOrderStatus')) {
          * @param string $slug   The slug for the custom order status.
          * @param string $label  The label for the custom order status.
          */
-        private static function registerCustomOrderStatus(string $slug, string $label): void {
+        private static function register_custom_order_status(string $slug, string $label): void {
             register_post_status($slug, [
                 'label'                     => $label,
                 'public'                    => true,
@@ -80,23 +80,23 @@ if (!class_exists('MobileSasa_CustomOrderStatus')) {
         /**
          * Add custom order statuses to the WooCommerce order status dropdown.
          *
-         * @param array $orderStatuses The existing order statuses.
+         * @param array $order_statuses The existing order statuses.
          * @return array The updated order statuses, including the custom order statuses.
          */
-        public static function addCustomOrderStatusesToDropdown(array $orderStatuses): array {
-            $updatedOrderStatuses = [];
+        public static function add_custom_order_statuses_to_dropdown(array $order_statuses): array {
+            $updated_order_statuses = [];
 
-            foreach ($orderStatuses as $key => $status) {
-                $updatedOrderStatuses[$key] = $status;
+            foreach ($order_statuses as $key => $status) {
+                $updated_order_statuses[$key] = $status;
 
                 if ('wc-completed' === $key) {
-                    $updatedOrderStatuses['wc-ready-for-pickup'] = 'Ready for Pickup';
-                    $updatedOrderStatuses['wc-failed-delivery'] = 'Failed Delivery';
-                    $updatedOrderStatuses['wc-returned'] = 'Returned';
+                    $updated_order_statuses['wc-ready-for-pickup'] = 'Ready for Pickup';
+                    $updated_order_statuses['wc-failed-delivery'] = 'Failed Delivery';
+                    $updated_order_statuses['wc-returned'] = 'Returned';
                 }
             }
 
-            return $updatedOrderStatuses;
+            return $updated_order_statuses;
         }
     }
 }

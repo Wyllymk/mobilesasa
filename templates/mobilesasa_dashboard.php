@@ -84,7 +84,7 @@ if ($message_sent) {
                 global $wpdb;
 
                 // Define the table name
-                $table_name = $wpdb->prefix . 'mobilesasa';
+                $table_name = $wpdb->prefix . 'mobilesasa_balance';
 
                 // Retrieve the latest balance entry from the database
                 $balance_row = $wpdb->get_row("SELECT balance FROM $table_name ORDER BY created_at DESC LIMIT 1");
