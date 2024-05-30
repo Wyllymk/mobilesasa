@@ -8,6 +8,9 @@ jQuery(document).ready(function ($) {
   // TAB JS
   const tabs = $("ul.nav-tabs > li");
 
+  // Check if the page was reloaded
+  const isPageReloaded = performance.navigation.type === performance.navigation.TYPE_RELOAD;
+
   const switchTab = (event) => {
     event.preventDefault();
 
@@ -44,6 +47,25 @@ jQuery(document).ready(function ($) {
     url.searchParams.set("tab", activeTab.substring(1)); // Remove the '#' from the ID
     window.history.replaceState(null, null, url.toString());
   }
+
+  // Clear the active tab state when navigating away from the page, but not on reload
+  window.addEventListener("beforeunload", (event) => {
+    // Check if the navigation is not a reload
+    if (!isPageReloaded) {
+      localStorage.removeItem("activeTab");
+    }
+  });
+
+  // Ensure the form action URL includes the current tab
+  $("form").on("submit", function () {
+    const activeTab = localStorage.getItem("activeTab");
+    if (activeTab) {
+      const form = $(this);
+      const actionUrl = new URL(form.attr("action"));
+      actionUrl.searchParams.set("tab", activeTab.substring(1)); // Remove the '#' from the ID
+      form.attr("action", actionUrl.toString());
+    }
+  });
 
   // DATETIME-LOCAL JS
   const scheduleSmsToggle = $("#schedule_sms_toggle");

@@ -40,10 +40,10 @@ if ($message_sent) {
                     <ul>
                         <li class="welcome-icon welcome-edit-page">
                             <?php
-                        $github_credentials_url = esc_url(add_query_arg('page', 'mobilesasa-sms', admin_url('admin.php')));
+                        $mobilesasa_credentials_url = esc_url(add_query_arg('page', 'mobilesasa-sms', admin_url('admin.php')));
                         printf(
-                            __('Add your <a target="_blank" href="https://sms.mobilesasa.com/docs">MOBILESASA</a> credentials', 'mobilesasa'),
-                            $github_credentials_url
+                            __('Add your <a target="_blank" href="https://sms.mobilesasa.com/docs/">MOBILESASA</a> credentials', 'mobilesasa'),
+                            $mobilesasa_credentials_url
                         );
                         ?>
                         </li>

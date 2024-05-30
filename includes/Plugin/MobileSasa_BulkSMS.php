@@ -26,7 +26,7 @@ if (!class_exists('MobileSasa_BulkSMS')) {
             add_action('wp_ajax_delete_scheduled_message', [self::class, 'delete_scheduled_message']);
             add_action('wp_ajax_delivery_status_sms', [self::class, 'delivery_status_sms_handler']);
             add_action('mobilesasa_send_scheduled_sms', [self::class, 'send_scheduled_sms']);
-            add_action('woocommerce_after_order_notes', [self::class, 'sms_opt_in_checkout']);
+            add_action('woocommerce_after_order_notes', [self::class, 'sms_opt_in_checkout'],10,1);
             add_action('woocommerce_checkout_update_order_meta', [self::class, 'save_sms_opt_in']);
         }
 
@@ -74,12 +74,6 @@ if (!class_exists('MobileSasa_BulkSMS')) {
                 $timezone = 'Africa/Nairobi'; // Replace with your desired timezone
 
                 $timestamp = self::convert_to_timestamp($schedule_date, $timezone);
-
-                if ($timestamp === false) {
-                    error_log( 'Invalid date string.');
-                } else {
-                    error_log( "The timestamp for $schedule_date in $timezone is: $timestamp");
-                }
 
                 // Schedule WP-Cron event
                 if (!wp_next_scheduled('mobilesasa_send_scheduled_sms', array($wpdb->insert_id))) {
@@ -150,7 +144,12 @@ if (!class_exists('MobileSasa_BulkSMS')) {
 
             return $local_dt->getTimestamp();
         }
-
+        /**
+         * Handle the submission of the bulk SMS form.
+         *
+         * This function checks if the user has the required permissions, and if the bulk SMS is enabled.
+         * If enabled, it sends the bulk SMS to the provided phone numbers using the MobileSasa_SendSMS class.
+         */
         public static function send_scheduled_sms($scheduled_message_id) {
             
             global $wpdb;
@@ -220,10 +219,7 @@ if (!class_exists('MobileSasa_BulkSMS')) {
             } else {
                 wp_send_json_success(array('message' => 'Message deleted successfully.'));
             }
-        }
-        
-        
-        
+        }    
 
         /**
          * Save the message details to the database.
@@ -254,9 +250,6 @@ if (!class_exists('MobileSasa_BulkSMS')) {
         /**
          * Check the delivery status of messages.
          */
-        /**
-         * Check the delivery status of messages.
-         */
         public static function delivery_status_sms_handler(): void {
             if (!isset($_POST['_ajax_nonce']) || !wp_verify_nonce($_POST['_ajax_nonce'], 'delivery_status_sms_nonce')) {
                 wp_send_json_error(array('message' => 'Nonce verification failed.'));
@@ -279,7 +272,7 @@ if (!class_exists('MobileSasa_BulkSMS')) {
             if ($response && isset($response['status']) && $response['status'] == true) {
                 $delivered_count = 0;
                 foreach ($response['messages'] as $msg) {
-                    if ($msg['deliveryStatus']['status'] == 'Delivered') {
+                    if ($msg['deliveryStatus']['status'] == 'Delivered' || $msg['deliveryStatus']['status'] == 'DeliveredToTerminal' || $msg['deliveryStatus']['status'] == 'DELIVRD') {
                         $delivered_count++;
                     }
                 }
@@ -333,12 +326,26 @@ if (!class_exists('MobileSasa_BulkSMS')) {
          *
          * @param \WC_Checkout $checkout The WooCommerce checkout object.
          */
-        public static function sms_opt_in_checkout(\WC_Checkout $checkout): void {
+        public static function sms_opt_in_checkout1(\WC_Checkout $checkout): void {
+            error_log('sms_opt_in_checkout hook fired');
+            echo '<div class="woocommerce-additional-fields__field-wrapper">';
             woocommerce_form_field('sms_opt_in', [
                 'type' => 'checkbox',
                 'class' => ['form-row-wide'],
-                'label' => __('Yes, I would like to receive updates via SMS.', 'mobilesasa')
+                'label' => __('Yes, I would like to receive updates via SMS.', 'mobilesasa'),
             ], $checkout->get_value('sms_opt_in'));
+            echo '</div>';
+        }
+        /** * Add the field to the checkout page */
+        public static function sms_opt_in_checkout(\WC_Checkout $checkout){
+            echo '<div id="customise_checkout_field"><h2>' . __('Heading') . '</h2>';
+            woocommerce_form_field('customised_field_name', array(
+                'type' => 'text',
+                'class' => array('my-field-class form-row-wide'),
+                'label' => __('Customise Additional Field'),
+                'placeholder' => __('Guidence') ,'required' => true,
+            ), $checkout->get_value('customised_field_name'));
+            echo '</div>';
         }
 
         /**
@@ -351,5 +358,6 @@ if (!class_exists('MobileSasa_BulkSMS')) {
                 update_post_meta($order_id, '_sms_opt_in', sanitize_text_field($_POST['sms_opt_in']));
             }
         }
+
     }
 }

@@ -127,7 +127,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
                     foreach ($admin_statuses as $status) {
                         if ($new_status === $status && self::$options["admin_sms_enable"] === '1' && !empty(self::$options["admin_sms_message"])) {
                             $message = str_replace(
-                                ['{name}', '{order_id}', '{total}', '{phone}'],
+                                ['{name}', '{orderid}', '{total}', '{phone}'],
                                 [$name, $order_id, $total, $phone],
                                 self::$options["admin_sms_message"]
                             );
@@ -192,7 +192,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
 
                     if (self::$options["draft_sms_enable"] === '1' && !empty(self::$options["draft_sms_message"])) {
                         $message = str_replace(
-                            ['{name}', '{order_id}', '{total}', '{phone}'],
+                            ['{name}', '{orderid}', '{total}', '{phone}'],
                             [$name, $order_id, $total, $phone],
                             self::$options["draft_sms_message"]
                         );
