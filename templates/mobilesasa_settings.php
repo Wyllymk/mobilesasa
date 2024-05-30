@@ -24,6 +24,7 @@ if ($is_update) {
 }
 
 function get_all_customers() {
+    // Fetch all orders
     $orders = wc_get_orders([
         'limit' => -1,
         'status' => 'all'
@@ -31,21 +32,46 @@ function get_all_customers() {
 
     $customers = [];
 
+    // Loop through each order
     foreach ($orders as $order) {
+        // Ensure the order is not a refund
+        if ($order instanceof WC_Order_Refund) {
+            continue;
+        }
+
         $phone = $order->get_billing_phone();
+
+        // Skip customers without a phone number
+        if (empty($phone)) {
+            continue;
+        }
+
         $name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
-        $opt_in = get_post_meta($order->get_id(), '_sms_opt_in', true);
-        if (!empty($phone) && !isset($customers[$phone])) {
+        $email = $order->get_billing_email();
+        $order_total = $order->get_total();
+
+        // Check if customer already exists
+        if (isset($customers[$phone])) {
+            // Increment the order count and add to the total amount spent
+            $customers[$phone]['orders_count']++;
+            $customers[$phone]['total_spent'] += $order_total;
+        } else {
+            // Initialize a new customer entry
             $customers[$phone] = [
-                'name'   => $name,
-                'phone'  => $phone,
-                'opt_in' => $opt_in
+                'name'        => $name,
+                'phone'       => $phone,
+                'email'       => $email,
+                'orders_count'=> 1,
+                'total_spent' => $order_total
             ];
         }
     }
 
     return array_values($customers);
 }
+
+
+
 
 $customers = get_all_customers();
 
@@ -108,7 +134,9 @@ if ($message_sent) {
                         <tr>
                             <th><?php esc_html_e('Name', 'mobilesasa'); ?></th>
                             <th><?php esc_html_e('Phone', 'mobilesasa'); ?></th>
-                            <th><?php esc_html_e('Opt-in', 'mobilesasa'); ?></th>
+                            <th><?php esc_html_e('Email', 'mobilesasa'); ?></th>
+                            <th><?php esc_html_e('Orders Placed', 'mobilesasa'); ?></th>
+                            <th><?php esc_html_e('Amount Spent', 'mobilesasa'); ?></th>
                             <th><?php esc_html_e('Send SMS', 'mobilesasa'); ?></th>
                         </tr>
                     </thead>
@@ -117,9 +145,9 @@ if ($message_sent) {
                         <tr>
                             <td><?php echo esc_html($customer['name']); ?></td>
                             <td><?php echo esc_html($customer['phone']); ?></td>
-                            <td>
-                                <input type="checkbox" disabled <?php checked($customer['opt_in'], 'yes'); ?>>
-                            </td>
+                            <td><?php echo esc_html($customer['email']); ?></td>
+                            <td><?php echo esc_html($customer['orders_count']); ?></td>
+                            <td><?php echo wc_price($customer['total_spent']); ?></td>
                             <td>
                                 <input type="checkbox" name="send_sms[]"
                                     value="<?php echo esc_attr($customer['phone']); ?>">
@@ -128,6 +156,7 @@ if ($message_sent) {
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+
                 <br>
                 <label><input type="checkbox" id="select_all">
                     <?php esc_html_e('Select All Customers', 'mobilesasa'); ?>

@@ -101,7 +101,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
                     'cancelled' => 'cancelled_sms',
                     'refunded' => 'refunded_sms',
                     'failed' => 'failed_sms',
-                    'ready-for-pickup' => 'ready_for_pickup_sms',
+                    'ready-for-pickup' => 'pickup_sms',
                     'failed-delivery' => 'failed_delivery_sms',
                     'returned' => 'returned_sms',
                 ];

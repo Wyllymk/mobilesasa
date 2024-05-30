@@ -26,8 +26,6 @@ if (!class_exists('MobileSasa_BulkSMS')) {
             add_action('wp_ajax_delete_scheduled_message', [self::class, 'delete_scheduled_message']);
             add_action('wp_ajax_delivery_status_sms', [self::class, 'delivery_status_sms_handler']);
             add_action('mobilesasa_send_scheduled_sms', [self::class, 'send_scheduled_sms']);
-            add_action('woocommerce_after_order_notes', [self::class, 'sms_opt_in_checkout'],10,1);
-            add_action('woocommerce_checkout_update_order_meta', [self::class, 'save_sms_opt_in']);
         }
 
         /**
@@ -126,7 +124,7 @@ if (!class_exists('MobileSasa_BulkSMS')) {
          *
          * @return int|false The Unix timestamp on success, false on failure.
          */
-        public static function convert_to_timestamp($date_string, $timezone) {
+        public static function convert_to_timestamp(string $date_string, string $timezone) {
             
             $tz = new \DateTimeZone($timezone);
             $date = \DateTime::createFromFormat('Y-m-d\TH:i', $date_string, $tz);
@@ -144,14 +142,14 @@ if (!class_exists('MobileSasa_BulkSMS')) {
 
             return $local_dt->getTimestamp();
         }
+
         /**
-         * Handle the submission of the bulk SMS form.
+         * Handle the sending of scheduled SMS messages.
          *
-         * This function checks if the user has the required permissions, and if the bulk SMS is enabled.
-         * If enabled, it sends the bulk SMS to the provided phone numbers using the MobileSasa_SendSMS class.
+         * @param int $scheduled_message_id The ID of the scheduled message.
          */
-        public static function send_scheduled_sms($scheduled_message_id) {
-            
+        public static function send_scheduled_sms(int $scheduled_message_id): void {
+           
             global $wpdb;
             $table_name = $wpdb->prefix . 'mobilesasa_scheduled_messages';
             $scheduled_message = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $scheduled_message_id), ARRAY_A);
@@ -186,12 +184,12 @@ if (!class_exists('MobileSasa_BulkSMS')) {
         
 
         /**
-         * Handle the deleting scheduled message.
+         * Handle the deleting of scheduled message.
          *
          * This function checks if the user has the required permissions, and if the bulk SMS is enabled.
          * If enabled, it sends the bulk SMS to the provided phone numbers using the MobileSasa_SendSMS class.
          */
-        public static function delete_scheduled_message() {
+        public static function delete_scheduled_message(): void {
             // Verify nonce
             if (!isset($_POST['_ajax_nonce']) || !wp_verify_nonce($_POST['_ajax_nonce'], 'delete_message_nonce')) {
                 wp_send_json_error(array('message' => 'Nonce verification failed.'));
@@ -319,44 +317,6 @@ if (!class_exists('MobileSasa_BulkSMS')) {
 
             $body = wp_remote_retrieve_body($response);
             return json_decode($body, true);
-        }
-
-        /**
-         * Add an SMS opt-in checkbox to the checkout page.
-         *
-         * @param \WC_Checkout $checkout The WooCommerce checkout object.
-         */
-        public static function sms_opt_in_checkout1(\WC_Checkout $checkout): void {
-            error_log('sms_opt_in_checkout hook fired');
-            echo '<div class="woocommerce-additional-fields__field-wrapper">';
-            woocommerce_form_field('sms_opt_in', [
-                'type' => 'checkbox',
-                'class' => ['form-row-wide'],
-                'label' => __('Yes, I would like to receive updates via SMS.', 'mobilesasa'),
-            ], $checkout->get_value('sms_opt_in'));
-            echo '</div>';
-        }
-        /** * Add the field to the checkout page */
-        public static function sms_opt_in_checkout(\WC_Checkout $checkout){
-            echo '<div id="customise_checkout_field"><h2>' . __('Heading') . '</h2>';
-            woocommerce_form_field('customised_field_name', array(
-                'type' => 'text',
-                'class' => array('my-field-class form-row-wide'),
-                'label' => __('Customise Additional Field'),
-                'placeholder' => __('Guidence') ,'required' => true,
-            ), $checkout->get_value('customised_field_name'));
-            echo '</div>';
-        }
-
-        /**
-         * Save the SMS opt-in checkbox value to the order meta.
-         *
-         * @param int $order_id The ID of the WooCommerce order.
-         */
-        public static function save_sms_opt_in(int $order_id): void {
-            if (isset($_POST['sms_opt_in'])) {
-                update_post_meta($order_id, '_sms_opt_in', sanitize_text_field($_POST['sms_opt_in']));
-            }
         }
 
     }
