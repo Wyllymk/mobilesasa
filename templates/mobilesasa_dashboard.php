@@ -148,52 +148,70 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
             <p><b>About the plugin</b></p>
 
             <p>
-                The Mobile Sasa SMS Plugin is a powerful tool that helps you stay connected with your customers
-                throughout their shopping journey. Built to seamlessly integrate with WooCommerce, this plugin leverages
-                the Mobile Sasa SMS API to deliver timely and personalized SMS notifications to your customers and
-                admins.
+                The Mobile Sasa SMS Plugin is your gateway to seamless communication with your customers, enriching
+                their shopping experience at every step. Specifically designed to integrate flawlessly with WooCommerce,
+                this plugin harnesses the Mobile Sasa SMS API to deliver personalized and timely SMS notifications to
+                both your customers and administrators.
             </p>
             <p><b>Stay Informed, Stay Engaged</b></p>
             <p>
-                With the Mobile Sasa SMS Plugin, you can ensure that your customers are always up-to-date with the
-                status of their orders. From the moment an order is placed to the moment it's delivered (and even
-                beyond), this plugin keeps your customers informed every step of the way. Receive notifications for
-                various order events, including:
-            </p>
-            <ul>
-                <li> - Order Draft</li>
-                <li> - Order Pending</li>
-                <li> - Order On Hold</li>
-                <li> - Order Processing</li>
-                <li> - Order Completed</li>
-                <li> - Order Failed</li>
-                <li> - Order Ready for Pickup</li>
-                <li> - Order Failed Delivery</li>
-                <li> - Order Returned</li>
-                <li> - Order Refunded</li>
-            </ul>
-            <p>Not only does this plugin keep your customers in the loop, but it also keeps you, the store owner,
-                informed. Receive admin notifications whenever an order is placed or its status changes, allowing you to
-                stay on top of your business operations.
+                With the Mobile Sasa SMS Plugin, you ensure that your customers remain well-informed about the status of
+                their orders. Whether it's a newly drafted order, one that's pending, or one that's on hold, the plugin
+                keeps your customers updated throughout the entire order lifecycle. Receive notifications for various
+                order events, such as order draft, processing, completion, failure, readiness for pickup, failed
+                delivery, return, or refund. <br><br>
+
+                This robust functionality not only keeps your customers in the loop but also empowers you as the store
+                owner. Receive instant admin notifications whenever an order is placed or its status changes, enabling
+                you to manage your business operations efficiently.
             </p>
             <p><b>Customizable and Efficient</b></p>
-            <p>The Mobile Sasa SMS Plugin offers a high degree of customization, allowing you to tailor the SMS messages
-                to suit your brand's voice and messaging. Easily customize the messages with dynamic shortcodes that
-                automatically populate order details, such as customer name, order ID, total amount, and phone
-                number.<br><br>
-                Additionally, the plugin's seamless integration with the Mobile Sasa SMS API ensures efficient and
-                reliable SMS delivery, ensuring that your messages reach your customers and admins without any hiccups.
+            <p>Tailor your SMS messages to reflect your brand's identity with the Mobile Sasa SMS Plugin's extensive
+                customization options. Utilize dynamic shortcodes to automatically include pertinent order details like
+                customer names, order IDs, total amounts, and phone numbers. This level of customization ensures that
+                your SMS messages resonate with your brand's voice and messaging.<br><br>
+
+                The plugin's seamless integration with the Mobile Sasa SMS API guarantees efficient and reliable SMS
+                delivery. Rest assured that your messages will reach your customers and administrators promptly and
+                without any disruptions.
+            </p>
+            <p><b>Modules Overview</b></p>
+            <p>
+                The Mobile Sasa SMS Plugin comprises three main modules:
+            </p>
+            <ol>
+                <li>
+                    <b>Bulk SMS:</b> Send personalized bulk SMS messages to your customers effortlessly.
+                </li>
+                <li>
+                    <b>Transactional SMS:</b> Keep your customers informed about critical transactional updates,
+                    enhancing
+                    their experience.
+                </li>
+                <li>
+                    <b>OTP Login (Coming Soon):</b> Simplify user authentication and security with easy-to-use OTP login
+                    functionality.
+                </li>
+            </ol>
+            <p>Whether you're managing a small business or a large enterprise, the Mobile Sasa SMS Plugin is an
+                invaluable asset that fosters seamless communication with your customers, empowering you to make
+                informed decisions about your business.
             </p>
             <p><b>Stay Connected, Stay Successful</b></p>
             <p>
-                This plugin also provides a simple way to send SMS messages to your customers and admins. Simply
-                configure your SMS credentials and enter the message content and recipients, and the plugin will
-                handle the rest.
+                In addition to order notifications, the Mobile Sasa SMS Plugin simplifies sending personalized SMS
+                messages to your customers and administrators. Configure your SMS credentials, input message content,
+                and specify recipients – the plugin handles the rest.<br><br>
+
+                For optimal performance, ensure that you've set up your credentials properly before attempting any
+                transactions. For bulk messaging, remember to input and save your message before sending it out.
             </p>
+            <p><b>Contact Developer</b></p>
             <p>
-                Whether you're a small business or a large enterprise, the Mobile Sasa SMS Plugin is a powerful tool
-                that can help you stay connected with your customers and make informed decisions about your business.
+                For any queries, problems, plugin development inquiries, or other matters, please visit
+                <a target="_blank" href="https://wilsondevops.com">Wilson Devops</a>
             </p>
+
         </div>
 
     </div>
