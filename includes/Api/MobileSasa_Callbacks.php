@@ -20,35 +20,31 @@ if( ! class_exists('MobileSasa_Callbacks')){
 
     class MobileSasa_Callbacks{
 
-        public static function adminDashboard(){
+        public static function admin_dashboard(){
             if(file_exists(MS_PLUGIN_PATH . 'templates/mobilesasa_dashboard.php')){
                 require_once (MS_PLUGIN_PATH . 'templates/mobilesasa_dashboard.php');
             }
         }
-        public static function adminSettings(){
+        public static function admin_settings(){
             if(file_exists(MS_PLUGIN_PATH . 'templates/mobilesasa_settings.php')){
                 require_once (MS_PLUGIN_PATH . 'templates/mobilesasa_settings.php');
             }
         }
-        public static function adminHistory(){
+        public static function admin_history(){
             if(file_exists(MS_PLUGIN_PATH . 'templates/mobilesasa_history.php')){
                 require_once (MS_PLUGIN_PATH . 'templates/mobilesasa_history.php');
             }
         }
 
-        public static function mobilesasaOptionsGroup($input){
+        public static function mobilesasa_options_group($input){
             return $input;
         }
         
-        public static function mobilesasaAdminSection(){
+        public static function mobilesasa_admin_section(){
             echo 'Please fill in the fields below!';
         }
 
-        public static function mobilesasaAdminSection1(){
-            echo 'Please fill in the field below!';
-        }
-
-        public static function mobilesasaSender($args) {
+        public static function mobilesasa_sender($args) {
             $options = get_option('mobilesasa_defaults');
             $mobilesasa_sender = isset($options['mobilesasa_sender']) ? esc_attr($options['mobilesasa_sender']) : '';
         
@@ -60,7 +56,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function mobilesasaToken() {
+        public static function mobilesasa_token() {
             $options = get_option('mobilesasa_defaults');
         
             // Check if the 'mobilesasa_token' key exists in the $options array
@@ -69,20 +65,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '<input type="text" class="regular-text" name="mobilesasa_defaults[mobilesasa_token]" value="' . $mobilesasa_token . '" placeholder="Enter Mobile Sasa API Token">';
         }
 
-        public static function bulkMessage($args) {
-            $options = get_option('mobilesasa_bulk_options');
-            $bulk_message = isset($options['bulk_message']) ? esc_textarea($options['bulk_message']) : '';
-            $default_message_text = 'Enter your bulk message here.';
-        
-            $html = '<textarea class="large-text" rows="5" style="width:30em" name="mobilesasa_bulk_options[bulk_message]" placeholder="' . esc_attr($default_message_text) . '">' . $bulk_message . '</textarea>';
-        
-            if (isset($args['desc'])) {
-                $html .= '<p class="description">' . esc_html($args['desc']) . '</p>';
-            }
-        
-            echo $html;
-        }
-        public static function transactionalSmsEnable(){
+        public static function transactional_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $transactional_sms_enable = isset($options['transactional_sms_enable']) ? esc_attr($options['transactional_sms_enable']) : '0';
             $default_repo_text = 'Click to activate Mobile Sasa Transactional SMS';
@@ -91,7 +74,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '<p class="description">' . esc_html($default_repo_text) . '</p>';
 
         }
-        public static function adminNumber($args) {
+        public static function admin_number($args) {
             $options = get_option('mobilesasa_transactional_options');
             $transactional_admin_number = isset($options['transactional_admin_number']) ? esc_attr($options['transactional_admin_number']) : '';
             $default_message_text = 'e.g 0729123456, 0728654321';
@@ -104,7 +87,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
 
             echo $html;
         }
-        public static function adminSmsEnable(){
+        public static function admin_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $admin_sms_enable = isset($options['admin_sms_enable']) ? esc_attr($options['admin_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -115,7 +98,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function adminSmsMessage($args) {
+        public static function admin_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $admin_sms_message = isset($options['admin_sms_message']) ? esc_textarea($options['admin_sms_message']) : '';
             $default_message_text = __('e.g Hello Admin, {name} has placed an order #{orderid}','mobilesasa');
@@ -128,7 +111,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function draftSmsEnable(){
+        public static function draft_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $draft_sms_enable = isset($options['draft_sms_enable']) ? esc_attr($options['draft_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -139,7 +122,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function draftSmsMessage($args) {
+        public static function draft_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $draft_sms_message = isset($options['draft_sms_message']) ? esc_textarea($options['draft_sms_message']) : '';
             $default_message_text = __('e.g Hello {name}, please continue with your order #{orderid}','mobilesasa');
@@ -152,7 +135,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function pendingSmsEnable(){
+        public static function pending_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $pending_sms_enable = isset($options['pending_sms_enable']) ? esc_attr($options['pending_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -163,7 +146,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function pendingSmsMessage($args) {
+        public static function pending_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $pending_sms_message = isset($options['pending_sms_message']) ? esc_textarea($options['pending_sms_message']) : '';
             $default_message_text = __('e.g Hello {name}, we have received your order #{orderid} please finish payment','mobilesasa');
@@ -176,7 +159,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function onholdSmsEnable(){
+        public static function onhold_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $onhold_sms_enable = isset($options['onhold_sms_enable']) ? esc_attr($options['onhold_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -187,7 +170,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function onholdSmsMessage($args) {
+        public static function onhold_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $onhold_sms_message = isset($options['onhold_sms_message']) ? esc_textarea($options['onhold_sms_message']) : '';
             $default_message_text = __('e.g Hello {name}, your order #{orderid} is on hold pending payment confirmation','mobilesasa');
@@ -200,7 +183,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function processingSmsEnable(){
+        public static function processing_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $processing_sms_enable = isset($options['processing_sms_enable']) ? esc_attr($options['processing_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -211,7 +194,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function processingSmsMessage($args) {
+        public static function processing_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $processing_sms_message = isset($options['processing_sms_message']) ? esc_textarea($options['processing_sms_message']) : '';
             $default_message_text = __('e.g Hello {name}, we have received your order #{orderid}','mobilesasa');
@@ -224,7 +207,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function completedSmsEnable(){
+        public static function completed_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $completed_sms_enable = isset($options['completed_sms_enable']) ? esc_attr($options['completed_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -235,7 +218,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function completedSmsMessage($args) {
+        public static function completed_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $completed_sms_message = isset($options['completed_sms_message']) ? esc_textarea($options['completed_sms_message']) : '';
             $default_message_text = __('e.g Hello {name}, we have shipped your order #{orderid}','mobilesasa');
@@ -248,7 +231,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function cancelledSmsEnable(){
+        public static function cancelled_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $cancelled_sms_enable = isset($options['cancelled_sms_enable']) ? esc_attr($options['cancelled_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -259,7 +242,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function cancelledSmsMessage($args) {
+        public static function cancelled_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $cancelled_sms_message = isset($options['cancelled_sms_message']) ? esc_textarea($options['cancelled_sms_message']) : '';
             $default_message_text = __('e.g Hello {name}, we have cancelled your order #{orderid}','mobilesasa');
@@ -272,7 +255,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function failedSmsEnable(){
+        public static function failed_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $failed_sms_enable = isset($options['failed_sms_enable']) ? esc_attr($options['failed_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -283,7 +266,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function failedSmsMessage($args) {
+        public static function failed_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $failed_sms_message = isset($options['failed_sms_message']) ? esc_textarea($options['failed_sms_message']) : '';
             $default_message_text = __('e.g Hello {name}, your order #{orderid} has failed payment','mobilesasa');
@@ -296,7 +279,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function pickupSmsEnable(){
+        public static function pickup_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $pickup_sms_enable = isset($options['pickup_sms_enable']) ? esc_attr($options['pickup_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -307,7 +290,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function pickupSmsMessage($args) {
+        public static function pickup_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $pickup_sms_message = isset($options['pickup_sms_message']) ? esc_textarea($options['pickup_sms_message']) : '';
             $default_message_text = __('e.g Hello {name}, your order #{orderid} is ready for pickup','mobilesasa');
@@ -320,7 +303,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function failedDeliverySmsEnable(){
+        public static function failed_delivery_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $failed_delivery_sms_enable = isset($options['failed_delivery_sms_enable']) ? esc_attr($options['failed_delivery_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -331,7 +314,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function failedDeliverySmsMessage($args) {
+        public static function failed_delivery_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $failed_delivery_sms_message = isset($options['failed_delivery_sms_message']) ? esc_textarea($options['failed_delivery_sms_message']) : '';
             $default_message_text = __('e.g Hello {name}, your order #{orderid} has failed delivery','mobilesasa');
@@ -344,7 +327,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function returnedSmsEnable(){
+        public static function returned_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $returned_sms_enable = isset($options['returned_sms_enable']) ? esc_attr($options['returned_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -355,7 +338,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function returnedSmsMessage($args) {
+        public static function returned_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $returned_sms_message = isset($options['returned_sms_message']) ? esc_textarea($options['returned_sms_message']) : '';
             $default_message_text = __('e.g Hello {name}, your order #{orderid} has been returned','mobilesasa');
@@ -368,7 +351,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
         
             echo $html;
         }
-        public static function refundedSmsEnable(){
+        public static function refunded_sms_enable(){
             $options = get_option('mobilesasa_transactional_options');
             $refunded_sms_enable = isset($options['refunded_sms_enable']) ? esc_attr($options['refunded_sms_enable']) : '0';
             $default_repo_text = 'Send SMS';
@@ -379,7 +362,7 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '</label>';
 
         }
-        public static function refundedSmsMessage($args) {
+        public static function refunded_sms_message($args) {
             $options = get_option('mobilesasa_transactional_options');
             $refunded_sms_message = isset($options['refunded_sms_message']) ? esc_textarea($options['refunded_sms_message']) : '';
             $default_message_text = __('e.g Hello {name}, your order #{orderid} has been refunded','mobilesasa');

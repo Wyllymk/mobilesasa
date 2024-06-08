@@ -64,7 +64,7 @@ if( ! class_exists('MobileSasa_Admin')){
                 'menu_title'    => 'Mobile Sasa Sms',
                 'capability'    => 'manage_options',
                 'menu_slug'     => 'mobilesasa-sms',
-                'callback'      => [self::$callbacks, 'adminDashboard'],
+                'callback'      => [self::$callbacks, 'admin_dashboard'],
                 'icon_url'      => 'dashicons-email-alt',
                 'position'      => 110
                 ],
@@ -82,7 +82,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     'menu_title'    => 'Settings',
                     'capability'    => 'manage_options',
                     'menu_slug'     => 'mobilesasa-settings',
-                    'callback'      => [self::$callbacks, 'adminSettings'],
+                    'callback'      => [self::$callbacks, 'admin_settings'],
                 ],
                 [
                     'parent_slug'   => 'mobilesasa-sms',
@@ -90,7 +90,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     'menu_title'    => 'History',
                     'capability'    => 'manage_options',
                     'menu_slug'     => 'mobilesasa-history',
-                    'callback'      => [self::$callbacks, 'adminHistory'],
+                    'callback'      => [self::$callbacks, 'admin_history'],
                 ]
             ];
         }
@@ -103,17 +103,17 @@ if( ! class_exists('MobileSasa_Admin')){
                 array(
                     'option_group'  => 'mobilesasa_admin_group',
                     'option_name'   => 'mobilesasa_defaults',
-                    'callback'      => [self::$callbacks, 'mobilesasaOptionsGroup'],
+                    'callback'      => [self::$callbacks, 'mobilesasa_options_group'],
                 ),
                 array(
                     'option_group'  => 'mobilesasa_bulk_group',
                     'option_name'   => 'mobilesasa_bulk_options',
-                    'callback'      => [self::$callbacks, 'mobilesasaOptionsGroup'],
+                    'callback'      => [self::$callbacks, 'mobilesasa_options_group'],
                 ),
                 array(
                     'option_group'  => 'mobilesasa_transactional_group',
                     'option_name'   => 'mobilesasa_transactional_options',
-                    'callback'      => [self::$callbacks, 'mobilesasaOptionsGroup'],
+                    'callback'      => [self::$callbacks, 'mobilesasa_options_group'],
                 ),     
 
             );
@@ -128,19 +128,14 @@ if( ! class_exists('MobileSasa_Admin')){
                 array(
                     'id'            => 'mobilesasa_index_token',
                     'title'         => 'Mobile Sasa Credentials',
-                    'callback'      => [self::$callbacks, 'mobilesasaAdminSection'],
+                    'callback'      => [self::$callbacks, 'mobilesasa_admin_section'],
                     'page'          => 'mobilesasa-sms'
                 ),
-                array(
-                    'id'            => 'bulksms_index',
-                    'title'         => 'Bulk SMS Settings',
-                    'callback'      => [self::$callbacks, 'mobilesasaAdminSection1'],
-                    'page'          => 'mobilesasa_bulk_settings'
-                ),
+               
                 array(
                     'id'            => 'transactionalsms_index',
                     'title'         => 'Transactional SMS Settings',
-                    'callback'      => [self::$callbacks, 'mobilesasaAdminSection'],
+                    'callback'      => [self::$callbacks, 'mobilesasa_admin_section'],
                     'page'          => 'mobilesasa_transactional_settings'
                 ),
                 
@@ -156,7 +151,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     [
                         'id'            => 'mobilesasa_sender',
                         'title'         => 'Sender ID',
-                        'callback'      => [self::$callbacks, 'mobilesasaSender'],
+                        'callback'      => [self::$callbacks, 'mobilesasa_sender'],
                         'page'          => 'mobilesasa-sms',
                         'section'       => 'mobilesasa_index_token',
                         'args'          => array(
@@ -169,7 +164,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     [
                         'id'            => 'mobilesasa_token',
                         'title'         => 'API Token',
-                        'callback'      => [self::$callbacks, 'mobilesasaToken'],
+                        'callback'      => [self::$callbacks, 'mobilesasa_token'],
                         'page'          => 'mobilesasa-sms',
                         'section'       => 'mobilesasa_index_token',
                         'args'          => array(
@@ -179,23 +174,11 @@ if( ! class_exists('MobileSasa_Admin')){
                         )
                     ],
                     
-                    array(
-                        'id'            => 'bulk_message',
-                        'title'         => 'Message',
-                        'callback'      => [self::$callbacks, 'bulkMessage'],
-                        'page'          => 'mobilesasa_bulk_settings',
-                        'section'       => 'bulksms_index',
-                        'args'          => array(
-                            'label_for' => 'bulk_message',
-                            'type'      => 'textarea',
-                            'class'     => 'example-text',
-                            'desc'      => __('This message will be sent as a bulk SMS to your customers.','mobilesasa'),
-                        )
-                    ),
+                   
                     array(
                         'id'            => 'transactional_sms_enable',
                         'title'         => 'Enable/ Disable',
-                        'callback'      => [self::$callbacks, 'transactionalSmsEnable'],
+                        'callback'      => [self::$callbacks, 'transactional_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -207,7 +190,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'transactional_admin_number',
                         'title'         => 'Admin Number',
-                        'callback'      => [self::$callbacks, 'adminNumber'],
+                        'callback'      => [self::$callbacks, 'admin_number'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -220,7 +203,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'admin_sms_enable',
                         'title'         => 'Receive Admin SMS',
-                        'callback'      => [self::$callbacks, 'adminSmsEnable'],
+                        'callback'      => [self::$callbacks, 'admin_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -232,7 +215,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'admin_sms_message',
                         'title'         => 'Admin Placed Order SMS',
-                        'callback'      => [self::$callbacks, 'adminSmsMessage'],
+                        'callback'      => [self::$callbacks, 'admin_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -247,7 +230,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'draft_sms_enable',
                         'title'         => 'Order Draft',
-                        'callback'      => [self::$callbacks, 'draftSmsEnable'],
+                        'callback'      => [self::$callbacks, 'draft_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -259,7 +242,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'draft_sms_message',
                         'title'         => 'Order Draft SMS',
-                        'callback'      => [self::$callbacks, 'draftSmsMessage'],
+                        'callback'      => [self::$callbacks, 'draft_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -274,7 +257,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'pending_sms_enable',
                         'title'         => 'Order Pending',
-                        'callback'      => [self::$callbacks, 'pendingSmsEnable'],
+                        'callback'      => [self::$callbacks, 'pending_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -286,7 +269,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'pending_sms_message',
                         'title'         => 'Order Pending Payment SMS',
-                        'callback'      => [self::$callbacks, 'pendingSmsMessage'],
+                        'callback'      => [self::$callbacks, 'pending_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -301,7 +284,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'onhold_sms_enable',
                         'title'         => 'Order On Hold',
-                        'callback'      => [self::$callbacks, 'onholdSmsEnable'],
+                        'callback'      => [self::$callbacks, 'onhold_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -313,7 +296,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'onhold_sms_message',
                         'title'         => 'Order On Hold SMS',
-                        'callback'      => [self::$callbacks, 'onholdSmsMessage'],
+                        'callback'      => [self::$callbacks, 'onhold_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -328,7 +311,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'processing_sms_enable',
                         'title'         => 'Order Processing',
-                        'callback'      => [self::$callbacks, 'processingSmsEnable'],
+                        'callback'      => [self::$callbacks, 'processing_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -340,7 +323,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'processing_sms_message',
                         'title'         => 'Order Processing SMS',
-                        'callback'      => [self::$callbacks, 'processingSmsMessage'],
+                        'callback'      => [self::$callbacks, 'processing_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -355,7 +338,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'completed_sms_enable',
                         'title'         => 'Order Completed',
-                        'callback'      => [self::$callbacks, 'completedSmsEnable'],
+                        'callback'      => [self::$callbacks, 'completed_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -367,7 +350,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'completed_sms_message',
                         'title'         => 'Order Completed SMS',
-                        'callback'      => [self::$callbacks, 'completedSmsMessage'],
+                        'callback'      => [self::$callbacks, 'completed_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -382,7 +365,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'cancelled_sms_enable',
                         'title'         => 'Order Cancelled',
-                        'callback'      => [self::$callbacks, 'cancelledSmsEnable'],
+                        'callback'      => [self::$callbacks, 'cancelled_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -394,7 +377,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'cancelled_sms_message',
                         'title'         => 'Order Cancelled SMS',
-                        'callback'      => [self::$callbacks, 'cancelledSmsMessage'],
+                        'callback'      => [self::$callbacks, 'cancelled_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -409,7 +392,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'failed_sms_enable',
                         'title'         => 'Order Failed',
-                        'callback'      => [self::$callbacks, 'failedSmsEnable'],
+                        'callback'      => [self::$callbacks, 'failed_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -421,7 +404,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'failed_sms_message',
                         'title'         => 'Order Failed SMS',
-                        'callback'      => [self::$callbacks, 'failedSmsMessage'],
+                        'callback'      => [self::$callbacks, 'failed_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -436,7 +419,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'pickup_sms_enable',
                         'title'         => 'Order Ready for Pickup',
-                        'callback'      => [self::$callbacks, 'pickupSmsEnable'],
+                        'callback'      => [self::$callbacks, 'pickup_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -448,7 +431,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'pickup_sms_message',
                         'title'         => 'Order Ready for Pickup SMS',
-                        'callback'      => [self::$callbacks, 'pickupSmsMessage'],
+                        'callback'      => [self::$callbacks, 'pickup_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -463,7 +446,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'failed_delivery_sms_enable',
                         'title'         => 'Order Failed Delivery',
-                        'callback'      => [self::$callbacks, 'failedDeliverySmsEnable'],
+                        'callback'      => [self::$callbacks, 'failed_delivery_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -475,7 +458,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'failed_delivery_sms_message',
                         'title'         => 'Order Failed Delivery SMS',
-                        'callback'      => [self::$callbacks, 'failedDeliverySmsMessage'],
+                        'callback'      => [self::$callbacks, 'failed_delivery_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -490,7 +473,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'returned_sms_enable',
                         'title'         => 'Order Returned',
-                        'callback'      => [self::$callbacks, 'returnedSmsEnable'],
+                        'callback'      => [self::$callbacks, 'returned_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -502,7 +485,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'returned_sms_message',
                         'title'         => 'Order Returned SMS',
-                        'callback'      => [self::$callbacks, 'returnedSmsMessage'],
+                        'callback'      => [self::$callbacks, 'returned_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -517,7 +500,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'refunded_sms_enable',
                         'title'         => 'Order Refunded',
-                        'callback'      => [self::$callbacks, 'refundedSmsEnable'],
+                        'callback'      => [self::$callbacks, 'refunded_sms_enable'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(
@@ -529,7 +512,7 @@ if( ! class_exists('MobileSasa_Admin')){
                     array(
                         'id'            => 'refunded_sms_message',
                         'title'         => 'Order Refunded SMS',
-                        'callback'      => [self::$callbacks, 'refundedSmsMessage'],
+                        'callback'      => [self::$callbacks, 'refunded_sms_message'],
                         'page'          => 'mobilesasa_transactional_settings',
                         'section'       => 'transactionalsms_index',
                         'args'          => array(

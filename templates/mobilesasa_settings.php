@@ -72,10 +72,18 @@ function get_all_customers() {
 
 $customers = get_all_customers();
 
+// Get options
+$mobilesasa_defaults = get_option('mobilesasa_defaults', array());
+
+// Retrieve message
+$message = $mobilesasa_defaults['mobilesasa_message'] ?? false;
+
 // Check if the message was sent successfully
 $message_empty = get_transient('wcbulksms_message_empty');
 $message_sent = get_transient('wcbulksms_message_sent');
 $scheduled_messages = get_transient('wcbulksms_message_scheduled');
+$sender_id_empty = get_transient('wc_mobilesasa_sender_id_empty');
+$token_empty = get_transient('wc_mobilesasa_token_empty');
 
 if($message_empty){
     delete_transient('wcbulksms_message_empty');
@@ -96,6 +104,20 @@ if($message_empty){
     ?>
 <div class="notice notice-mobilesasa notice-info is-dismissible">
     <p><b><?php esc_html_e('SMS messages scheduled for sending.', 'mobilesasa'); ?></b></p>
+</div>
+<?php
+} elseif ($sender_id_empty) {
+    delete_transient('wc_mobilesasa_sender_id_empty');
+    ?>
+<div class="notice notice-mobilesasa notice-error is-dismissible">
+    <p><b><?php esc_html_e('Please enter your MOBILESASA sender ID.', 'mobilesasa'); ?></b></p>
+</div>
+<?php
+} elseif ($token_empty) {
+    delete_transient('wc_mobilesasa_token_empty');
+    ?>
+<div class="notice notice-mobilesasa notice-error is-dismissible">
+    <p><b><?php esc_html_e('Please enter your MOBILESASA token.', 'mobilesasa'); ?></b></p>
 </div>
 <?php
 }
@@ -123,19 +145,6 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
 
     <div class="tab-content">
         <div id="tab-1" class="tab-pane <?php echo $current_tab === 'tab-1' ? 'active' : ''; ?>">
-            <form action="<?php echo admin_url('options.php'); ?>?tab=tab-1" method="post">
-                <?php
-                // Output nonce, action, and option_page fields for a settings page
-                settings_fields('mobilesasa_bulk_group');
-
-                // Output sections and fields for a settings page
-                do_settings_sections('mobilesasa_bulk_settings');
-
-                // Output Save Settings button
-                submit_button('Save Settings');
-                ?>
-            </form>
-            <hr>
 
             <h3><?php esc_html_e('Available Customers', 'mobilesasa'); ?></h3>
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
@@ -174,6 +183,11 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
                     <?php esc_html_e('Select All Customers', 'mobilesasa'); ?>
                 </label>
                 <br><br>
+                <p><?php esc_html_e('Enter your message below. You can customize it for each customer by using the shortcode {name}.', 'mobilesasa'); ?>
+                </p>
+                <textarea name="bulk_sms_message" rows="5" style="width:30%;"
+                    placeholder="<?php esc_attr_e('Enter your message here...', 'mobilesasa'); ?>"><?php echo esc_textarea($message); ?></textarea>
+                <br><br>
                 <label class="switch">
                     <input type="checkbox" id="schedule_sms_toggle" name="schedule_sms">
                     <span class="slider round"></span>
@@ -191,6 +205,7 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
                 </button>
                 <br><br>
             </form>
+
 
         </div>
         <div id="tab-2" class="tab-pane <?php echo $current_tab === 'tab-2' ? 'active' : ''; ?>">

@@ -14,6 +14,8 @@ if ($is_update) {
 
 // Check if the message was sent successfully
 $message_sent = get_transient('mobilesasa_balance_response');
+$token_empty = get_transient('wcbulksms_token_empty');
+
 if ($message_sent) {
     delete_transient('mobilesasa_balance_response');
 ?>
@@ -21,7 +23,15 @@ if ($message_sent) {
     <p><strong><?php esc_html_e('Balance retrieved successfully.', 'mobilesasa'); ?></strong></p>
 </div>
 <?php
-    }
+} elseif($token_empty){
+    delete_transient('wcbulksms_token_empty');
+    ?>
+<div class="notice notice-mobilesasa notice-error is-dismissible">
+    <p><strong><?php esc_html_e('Please enter your MOBILESASA token.', 'mobilesasa'); ?></strong></p>
+</div>
+<?php
+       
+}
 
 $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $current_tab variable
 
@@ -118,7 +128,7 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
                 $mobilesasa_defaults = get_option('mobilesasa_defaults', array());
 
                 // Retrieve balance
-                $balance = $mobilesasa_defaults['balance'] ?? false;
+                $balance = $mobilesasa_defaults['mobilesasa_balance'] ?? false;
 
                 if ($balance !== false) {
                     // Format the balance value with commas and maintain the decimals
@@ -129,8 +139,6 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
                 }
                 ?>
             </div>
-
-
 
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="get_balance">

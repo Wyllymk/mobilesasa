@@ -39,17 +39,43 @@ if (!class_exists('MobileSasa_BulkSMS')) {
                 wp_die(__('You do not have sufficient permissions to access this page.', 'mobilesasa'));
             }
         
-            $options = get_option('mobilesasa_bulk_options');
-            $message = $options['bulk_message'] ?? '';
+            // Get the default sender ID and API token for the SMS service
+            $default_options = get_option('mobilesasa_defaults');
+            $senderid = $default_options['mobilesasa_sender'];
+            $apitoken = $default_options['mobilesasa_token'];
 
+            // Retrieve the message from $_POST
+            $message = sanitize_text_field($_POST['bulk_sms_message']);
+            
             if (empty($message)) {
                 // Set transient for empty message
                 set_transient('wcbulksms_message_empty', true, 30);
                 // Redirect to the same page with an error parameter
                 wp_redirect(add_query_arg('error', 'empty_message', wp_get_referer()));
                 exit;
+            }  elseif (empty($senderid)) {
+                // Set transient for empty message
+                set_transient('wc_mobilesasa_sender_id_empty', true, 30);
+                // Redirect to the same page with an error parameter
+                wp_redirect(add_query_arg('error', 'empty_sender_id', wp_get_referer()));
+                exit;
+            } elseif (empty($apitoken)) {
+                // Set transient for empty message
+                set_transient('wc_mobilesasa_token_empty', true, 30);
+                // Redirect to the same page with an error parameter
+                wp_redirect(add_query_arg('error', 'empty_token', wp_get_referer()));
+                exit;
             }
-            
+
+            // Retrieve existing options
+            $options = get_option('mobilesasa_defaults');
+
+            // Update the message in the options array
+            $options['mobilesasa_message'] = $message;
+
+            // Save the updated options
+            update_option('mobilesasa_defaults', $options);
+ 
             $schedule_sms = isset($_POST['schedule_sms']) ? sanitize_text_field($_POST['schedule_sms']) : '';
             $schedule_date = isset($_POST['schedule_date']) ? sanitize_text_field($_POST['schedule_date']) : null;
         
@@ -92,11 +118,7 @@ if (!class_exists('MobileSasa_BulkSMS')) {
                 wp_redirect(add_query_arg('scheduled', 'true', wp_get_referer()));
                 exit;
             } else {
-                // Get the default sender ID and API token for the SMS service
-                $default_options = get_option('mobilesasa_defaults');
-                $senderid = $default_options['mobilesasa_sender'];
-                $apitoken = $default_options['mobilesasa_token'];
-    
+
                 // Initialize the SMS sending class with the sender ID and API token
                 MobileSasa_SendSMS::init($senderid, $apitoken);
     

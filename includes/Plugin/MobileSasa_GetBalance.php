@@ -50,6 +50,15 @@ if (!class_exists('MobileSasa_GetBalance')) {
             // Retrieve and set the API token
             $default_options = get_option('mobilesasa_defaults');
             $api_token = $default_options['mobilesasa_token'];
+
+            if (empty($api_token)) {
+                // Set transient for empty token
+                set_transient('wcbulksms_token_empty', true, 30);
+                // Redirect to the same page with an error parameter
+                wp_redirect(add_query_arg('error', 'empty_token', wp_get_referer()));
+                exit;
+            }
+            
             self::init($api_token);
 
             // Get the balance
@@ -111,7 +120,7 @@ if (!class_exists('MobileSasa_GetBalance')) {
                         $mobilesasa_defaults = get_option('mobilesasa_defaults', array());
 
                         // Update balance within the options group
-                        $mobilesasa_defaults['balance'] = floatval($balance);
+                        $mobilesasa_defaults['mobilesasa_balance'] = floatval($balance);
 
                         // Save the updated options
                         update_option('mobilesasa_defaults', $mobilesasa_defaults);
