@@ -22,7 +22,6 @@ if (!class_exists('MobileSasa_Database')) {
 
         private static $messages_table_name;
         private static $schedule_messages_table_name;
-        private static $balance_table_name;
 
         /**
          * Initialize the class and set the table names.
@@ -32,11 +31,9 @@ if (!class_exists('MobileSasa_Database')) {
             global $wpdb;
             self::$messages_table_name = $wpdb->prefix . 'mobilesasa_messages';
             self::$schedule_messages_table_name = $wpdb->prefix . 'mobilesasa_scheduled_messages';
-            self::$balance_table_name = $wpdb->prefix . 'mobilesasa_balance';
 
-            add_action('init', [self::class, 'create_messages_table']);
-            add_action('init', [self::class, 'create_scheduled_messages_table']);
-            add_action('init', [self::class, 'create_balance_table']);
+            add_action('admin_init', [self::class, 'create_messages_table']);
+            add_action('admin_init', [self::class, 'create_scheduled_messages_table']);
         }
 
         /**
@@ -46,21 +43,30 @@ if (!class_exists('MobileSasa_Database')) {
             global $wpdb;
 
             $table_name = self::$messages_table_name;
-            $charset_collate = $wpdb->get_charset_collate();
+            // Check if the table has been created before
+            $table_created = get_option('mobilesasa_messages_table_created');
+            $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") === $table_name;
+            
+            if (!$table_created || !$table_exists) {
+                $charset_collate = $wpdb->get_charset_collate();
 
-            $sql = "CREATE TABLE $table_name (
-                id mediumint(9) NOT NULL AUTO_INCREMENT,
-                sent_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-                message_body text NOT NULL,
-                recipients longtext NOT NULL,
-                status varchar(20) NOT NULL,
-                delivered_count int NOT NULL,
-                message_id varchar(50) NOT NULL,
-                PRIMARY KEY (id)
-            ) $charset_collate;";
+                $sql = "CREATE TABLE $table_name (
+                    id mediumint(9) NOT NULL AUTO_INCREMENT,
+                    sent_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                    message_body text NOT NULL,
+                    recipients longtext NOT NULL,
+                    status varchar(20) NOT NULL,
+                    delivered_count int NOT NULL,
+                    message_id varchar(50) NOT NULL,
+                    PRIMARY KEY (id)
+                ) $charset_collate;";
 
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-            dbDelta($sql);
+                require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+                dbDelta($sql);
+
+                // Set the option to indicate the table has been created
+                update_option('mobilesasa_messages_table_created', true);
+            }
         }
 
         /**
@@ -70,40 +76,30 @@ if (!class_exists('MobileSasa_Database')) {
             global $wpdb;
             $table_name = self::$schedule_messages_table_name;
         
-            $charset_collate = $wpdb->get_charset_collate();
+            // Check if the table has been created before
+            $table_created = get_option('mobilesasa_scheduled_messages_table_created');
+            $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") === $table_name;
+            
+            if (!$table_created || !$table_exists) {
+                $charset_collate = $wpdb->get_charset_collate();
         
-            $sql = "CREATE TABLE $table_name (
-                id bigint(20) NOT NULL AUTO_INCREMENT,
-                message text NOT NULL,
-                recipients text NOT NULL,
-                schedule_time datetime NOT NULL,
-                status varchar(20) DEFAULT 'pending' NOT NULL,
-                PRIMARY KEY  (id)
-            ) $charset_collate;";
-        
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-            dbDelta($sql);
+                $sql = "CREATE TABLE $table_name (
+                    id bigint(20) NOT NULL AUTO_INCREMENT,
+                    message text NOT NULL,
+                    recipients text NOT NULL,
+                    schedule_time datetime NOT NULL,
+                    status varchar(20) DEFAULT 'pending' NOT NULL,
+                    PRIMARY KEY  (id)
+                ) $charset_collate;";
+            
+                require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+                dbDelta($sql);
+
+                // Set the option to indicate the table has been created
+                update_option('mobilesasa_scheduled_messages_table_created', true);
+            }
+            
         }        
-
-        /**
-         * Create the database table for storing the balance.
-         */
-        public static function create_balance_table(): void {
-            global $wpdb;
-
-            $table_name = self::$balance_table_name;
-            $charset_collate = $wpdb->get_charset_collate();
-
-            $sql = "CREATE TABLE $table_name (
-                id mediumint(9) NOT NULL AUTO_INCREMENT,
-                balance decimal(10,2) NOT NULL,
-                created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-                PRIMARY KEY (id)
-            ) $charset_collate;";
-
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-            dbDelta($sql);
-        }
 
         /**
          * Save the balance to the database.

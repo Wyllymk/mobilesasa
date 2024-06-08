@@ -44,6 +44,10 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo 'Please fill in the fields below!';
         }
 
+        public static function mobilesasaAdminSection1(){
+            echo 'Please fill in the field below!';
+        }
+
         public static function mobilesasaSender($args) {
             $options = get_option('mobilesasa_defaults');
             $mobilesasa_sender = isset($options['mobilesasa_sender']) ? esc_attr($options['mobilesasa_sender']) : '';
@@ -65,15 +69,6 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo '<input type="text" class="regular-text" name="mobilesasa_defaults[mobilesasa_token]" value="' . $mobilesasa_token . '" placeholder="Enter Mobile Sasa API Token">';
         }
 
-        public static function bulkSmsEnable(){
-            $options = get_option('mobilesasa_bulk_options');
-            $bulk_sms_enable = isset($options['bulk_sms_enable']) ? esc_attr($options['bulk_sms_enable']) : '0';
-            $default_repo_text = 'Click to activate Mobile Sasa Bulk SMS';
-        
-            echo '<input type="checkbox" class="regular-text" name="mobilesasa_bulk_options[bulk_sms_enable]" value="1" ' . checked(1, $bulk_sms_enable, false) . '>';
-            echo '<p class="description">' . esc_html($default_repo_text) . '</p>';
-
-        }
         public static function bulkMessage($args) {
             $options = get_option('mobilesasa_bulk_options');
             $bulk_message = isset($options['bulk_message']) ? esc_textarea($options['bulk_message']) : '';

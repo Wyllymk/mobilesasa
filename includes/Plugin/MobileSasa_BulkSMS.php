@@ -41,8 +41,15 @@ if (!class_exists('MobileSasa_BulkSMS')) {
         
             $options = get_option('mobilesasa_bulk_options');
             $message = $options['bulk_message'] ?? '';
-            $is_enabled = $options['bulk_sms_enable'] ?? '0';
-                
+
+            if (empty($message)) {
+                // Set transient for empty message
+                set_transient('wcbulksms_message_empty', true, 30);
+                // Redirect to the same page with an error parameter
+                wp_redirect(add_query_arg('error', 'empty_message', wp_get_referer()));
+                exit;
+            }
+            
             $schedule_sms = isset($_POST['schedule_sms']) ? sanitize_text_field($_POST['schedule_sms']) : '';
             $schedule_date = isset($_POST['schedule_date']) ? sanitize_text_field($_POST['schedule_date']) : null;
         
@@ -85,34 +92,32 @@ if (!class_exists('MobileSasa_BulkSMS')) {
                 wp_redirect(add_query_arg('scheduled', 'true', wp_get_referer()));
                 exit;
             } else {
-                if ($is_enabled == '1' && !empty($message)) {
-                    // Get the default sender ID and API token for the SMS service
-                    $default_options = get_option('mobilesasa_defaults');
-                    $senderid = $default_options['mobilesasa_sender'];
-                    $apitoken = $default_options['mobilesasa_token'];
-        
-                    // Initialize the SMS sending class with the sender ID and API token
-                    MobileSasa_SendSMS::init($senderid, $apitoken);
-        
-                    if (!empty($_POST['send_sms'])) {
-                                                
-                        $phones = array_map('sanitize_text_field', $_POST['send_sms']);
-                        $cleaned_phones = MobileSasa_SendSMS::clean_phone($phones);
-        
-                        $message_id = MobileSasa_SendSMS::send_sms($cleaned_phones, $message);
-                        
-                        if ($message_id) {
-                            self::save_message($message, $cleaned_phones, 'Sent', 0, $message_id);
-                        }
-        
-                        // Add a success message
-                        set_transient('wcbulksms_message_sent', true, 30);
+                // Get the default sender ID and API token for the SMS service
+                $default_options = get_option('mobilesasa_defaults');
+                $senderid = $default_options['mobilesasa_sender'];
+                $apitoken = $default_options['mobilesasa_token'];
+    
+                // Initialize the SMS sending class with the sender ID and API token
+                MobileSasa_SendSMS::init($senderid, $apitoken);
+    
+                if (!empty($_POST['send_sms'])) {
+                                            
+                    $phones = array_map('sanitize_text_field', $_POST['send_sms']);
+                    $cleaned_phones = MobileSasa_SendSMS::clean_phone($phones);
+    
+                    $message_id = MobileSasa_SendSMS::send_sms($cleaned_phones, $message);
+                    
+                    if ($message_id) {
+                        self::save_message($message, $cleaned_phones, 'Sent', 0, $message_id);
                     }
-        
-                    // Redirect to the same page with a success parameter
-                    wp_redirect(add_query_arg('sent', 'true', wp_get_referer()));
-                    exit;
+    
+                    // Add a success message
+                    set_transient('wcbulksms_message_sent', true, 30);
                 }
+    
+                // Redirect to the same page with a success parameter
+                wp_redirect(add_query_arg('sent', 'true', wp_get_referer()));
+                exit;
             }
         }
 

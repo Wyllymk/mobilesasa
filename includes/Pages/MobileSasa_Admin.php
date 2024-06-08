@@ -134,7 +134,7 @@ if( ! class_exists('MobileSasa_Admin')){
                 array(
                     'id'            => 'bulksms_index',
                     'title'         => 'Bulk SMS Settings',
-                    'callback'      => [self::$callbacks, 'mobilesasaAdminSection'],
+                    'callback'      => [self::$callbacks, 'mobilesasaAdminSection1'],
                     'page'          => 'mobilesasa_bulk_settings'
                 ),
                 array(
@@ -179,18 +179,6 @@ if( ! class_exists('MobileSasa_Admin')){
                         )
                     ],
                     
-                    array(
-                        'id'            => 'bulk_sms_enable',
-                        'title'         => 'Enable/ Disable',
-                        'callback'      => [self::$callbacks, 'bulkSmsEnable'],
-                        'page'          => 'mobilesasa_bulk_settings',
-                        'section'       => 'bulksms_index',
-                        'args'          => array(
-                            'label_for' => 'bulk_sms_enable',
-                            'type'      => 'checkbox',
-                            'class'     => 'example-text',
-                        )
-                    ),
                     array(
                         'id'            => 'bulk_message',
                         'title'         => 'Message',

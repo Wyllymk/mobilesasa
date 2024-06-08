@@ -106,8 +106,16 @@ if (!class_exists('MobileSasa_GetBalance')) {
                         $status = 1;
                         // Save balance to the database
                         $balance = $responseVals['balance']; // Assuming 'balance' is the key for balance value in the response
-                        Mobilesasa_Database::save_balance(floatval($balance));
+                        
+                        // Get current options
+                        $mobilesasa_defaults = get_option('mobilesasa_defaults', array());
 
+                        // Update balance within the options group
+                        $mobilesasa_defaults['balance'] = floatval($balance);
+
+                        // Save the updated options
+                        update_option('mobilesasa_defaults', $mobilesasa_defaults);
+                        
                         // Add a success message
                         set_transient('mobilesasa_balance_response', true, 30);
                     } else {

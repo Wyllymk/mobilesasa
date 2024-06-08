@@ -25,9 +25,9 @@ if( ! class_exists('MobileSasa_Init')){
          */
         public static function getServices(){
             return [
-                Pages\MobileSasa_Admin::class,
                 Base\MobileSasa_Settings::class,
                 Base\MobileSasa_Enqueue::class,
+                Pages\MobileSasa_Admin::class,
                 Plugin\MobileSasa_SendSMS::class,
                 Plugin\MobileSasa_BulkSMS::class,
                 Plugin\MobileSasa_TransactionalSMS::class,

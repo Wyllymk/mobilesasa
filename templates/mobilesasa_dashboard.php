@@ -17,11 +17,14 @@ $message_sent = get_transient('mobilesasa_balance_response');
 if ($message_sent) {
     delete_transient('mobilesasa_balance_response');
 ?>
-<div class="notice notice-success is-dismissible">
+<div class="notice notice-mobilesasa notice-success is-dismissible">
     <p><strong><?php esc_html_e('Balance retrieved successfully.', 'mobilesasa'); ?></strong></p>
 </div>
 <?php
     }
+
+$current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $current_tab variable
+
 ?>
 
 <div class="wrap">
@@ -48,6 +51,32 @@ if ($message_sent) {
                         ?>
                         </li>
 
+                        <li>
+                            <?php
+                            $bulk_sms_url = esc_url(add_query_arg('page', 'mobilesasa-settings', admin_url('admin.php')));
+                            printf('<a href="%s" class="welcome-icon welcome-add-page %s">%s</a>', $bulk_sms_url, ($current_tab === 'tab-1') ? 'active' : '', esc_html__('Bulk SMS Settings', 'mobilesasa'));
+                            ?>
+                        </li>
+                        <li>
+                            <?php
+                            $transactional_sms_url = esc_url(add_query_arg(array(
+                                'page' => 'mobilesasa-settings',
+                                'tab' => 'tab-2'
+                            ), admin_url('admin.php')));
+                            printf('<a href="%s" class="welcome-icon welcome-add-page %s">%s</a>', $transactional_sms_url, ($current_tab === 'tab-2') ? 'active' : '', esc_html__('Transactional SMS Settings', 'mobilesasa'));
+                            ?>
+                        </li>
+                        <li>
+                            <?php
+                            $otp_login_url = esc_url(add_query_arg(array(
+                                'page' => 'mobilesasa-settings',
+                                'tab' => 'tab-3'
+                            ), admin_url('admin.php')));
+                            printf('<a href="%s" class="welcome-icon welcome-add-page %s">%s</a>', $otp_login_url, ($current_tab === 'tab-3') ? 'active' : '', esc_html__('OTP Login Settings', 'mobilesasa'));
+                            ?>
+                        </li>
+
+
                     </ul>
                 </div>
             </div>
@@ -58,8 +87,12 @@ if ($message_sent) {
     <?php settings_errors('mobilesasa_messages'); ?>
 
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#tab-1" id="tab-link-1">Manage Settings</a></li>
-        <li class=""><a href="#tab-2" id="tab-link-2">About</a></li>
+        <li class="active">
+            <a href="#tab-1" id="tab-link-1">Manage Settings</a>
+        </li>
+        <li class="">
+            <a href="#tab-2" id="tab-link-2">About</a>
+        </li>
     </ul>
 
     <div class="tab-content">
@@ -81,22 +114,22 @@ if ($message_sent) {
             <div class="balance-container">
                 <h3 class="balance-label"><?php esc_html_e('Balance:', 'mobilesasa'); ?></h3>
                 <?php
-                global $wpdb;
+                // Get options
+                $mobilesasa_defaults = get_option('mobilesasa_defaults', array());
 
-                // Define the table name
-                $table_name = $wpdb->prefix . 'mobilesasa_balance';
+                // Retrieve balance
+                $balance = $mobilesasa_defaults['balance'] ?? false;
 
-                // Retrieve the latest balance entry from the database
-                $balance_row = $wpdb->get_row("SELECT balance FROM $table_name ORDER BY created_at DESC LIMIT 1");
-
-                if ($balance_row) {
-                    $balance = $balance_row->balance;
-                    echo '<div class="balance-value">' . esc_html($balance) . '</div>';
+                if ($balance !== false) {
+                    // Format the balance value with commas and maintain the decimals
+                    $formatted_balance = number_format($balance, 2, '.', ',');
+                    echo '<div class="balance-value">' . esc_html($formatted_balance) . '</div>';
                 } else {
                     echo '<div class="balance-value">' . esc_html__('N/A', 'mobilesasa') . '</div>'; // Display default value if balance response is not available
                 }
                 ?>
             </div>
+
 
 
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">

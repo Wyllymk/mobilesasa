@@ -214,4 +214,24 @@ jQuery(document).ready(function ($) {
       });
     }
   });
+
+  // Function to hide the alerts after a time limit
+  const hideAlerts = () => {
+    $(".notice-mobilesasa").fadeOut(500, function () {
+      $(this).remove();
+    });
+  };
+
+  // Hide the alerts after a time limit (e.g., 10 seconds)
+  setTimeout(hideAlerts, 10000); // Adjust the time limit as needed
+
+  // Function to hide alerts on clicking another tab
+  const hideAlertsOnTabClick = () => {
+    $("ul.nav-tabs > li > a").on("click", function () {
+      hideAlerts();
+    });
+  };
+
+  // Call the function to hide alerts on clicking another tab
+  hideAlertsOnTabClick();
 });
