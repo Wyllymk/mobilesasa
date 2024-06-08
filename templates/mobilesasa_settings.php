@@ -162,7 +162,16 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
                         </tr>
                     </thead>
                     <tbody style="max-height: 300px; overflow-y: auto;">
-                        <?php foreach ($customers as $customer) : ?>
+                        <?php 
+                        $perPage = 10;
+                        $currentPage = isset($_GET['page']) ? absint($_GET['page']) : 1;
+                        $offset = ($currentPage - 1) * $perPage;
+
+                        $pagedCustomers = array_slice($customers, $offset, $perPage);
+
+                        foreach ($pagedCustomers as $customer) : 
+                        ?>
+
                         <tr>
                             <td><?php echo esc_html($customer['name']); ?></td>
                             <td><?php echo esc_html($customer['phone']); ?></td>
@@ -177,6 +186,24 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                <?php
+                $current_url = admin_url('admin.php?page=mobilesasa-settings');
+                $totalPages = ceil(count($customers) / $perPage);
+
+                if ($totalPages > 1) :
+                    $pageLinks = paginate_links(array(
+                        'base' => add_query_arg('page', '%#%', $current_url),
+                        'format' => '',
+                        'prev_text' => __('&laquo;'),
+                        'next_text' => __('&raquo;'),
+                        'total' => $totalPages,
+                        'current' => $currentPage,
+                    ));
+                    ?>
+                <div class="pagination">
+                    <?php echo $pageLinks; ?>
+                </div>
+                <?php endif; ?>
 
                 <br>
                 <label><input type="checkbox" id="select_all">

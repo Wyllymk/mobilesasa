@@ -123,7 +123,7 @@ if (!class_exists('MobileSasa_BulkSMS')) {
                 MobileSasa_SendSMS::init($senderid, $apitoken);
     
                 if (!empty($_POST['send_sms'])) {
-                                            
+                                          
                     $phones = array_map('sanitize_text_field', $_POST['send_sms']);
                     $cleaned_phones = MobileSasa_SendSMS::clean_phone($phones);
     
