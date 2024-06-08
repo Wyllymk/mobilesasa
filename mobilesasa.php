@@ -43,30 +43,30 @@ if(file_exists(MS_PLUGIN_PATH . 'vendor/autoload.php')){
 }
 
 /**
- * The function "activateMobileSasaExternally" activates the "Github_Actions_Activate" class externally.
+ * The function "activate_mobile_sasa_externally" activates the "Github_Actions_Activate" class externally.
  */
-function activateMobileSasaExternally(){
+function activate_mobile_sasa_externally(){
     Wylly\MobileSasa\Base\MobileSasa_Activate::activate();
 }
 
 // The function is used to register a callback function that will be executed when the plugin is activated. 
-register_activation_hook(__FILE__, 'activateMobileSasaExternally');
+register_activation_hook(__FILE__, 'activate_mobile_sasa_externally');
 
 /**
- * The function "deactivateMobileSasaExternally" calls the "deactivate" method of the
+ * The function "deactivate_mobile_sasa_externally" calls the "deactivate" method of the
  * "Github_Actions_Deactivate" class.
  */
-function deactivateMobileSasaExternally(){
+function deactivate_mobile_sasa_externally(){
     Wylly\MobileSasa\Base\MobileSasa_Deactivate::deactivate();
 
 }
 
 // The function is used to register a callback function that will be executed when the plugin is deactivated. 
-register_deactivation_hook(__FILE__, 'deactivateMobileSasaExternally');
+register_deactivation_hook(__FILE__, 'deactivate_mobile_sasa_externally');
 
 /* Checking if the class exists and if it does, it will register the services. 
 * This is a way to ensure that the class is loaded before calling its methods, preventing any errors or issues. 
 */
 if(class_exists('Wylly\\MobileSasa\\MobileSasa_Init')){
-    Wylly\MobileSasa\MobileSasa_Init::registerServices();
+    Wylly\MobileSasa\MobileSasa_Init::register_services();
 }

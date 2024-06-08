@@ -23,7 +23,7 @@ if( ! class_exists('MobileSasa_Init')){
          * Store all classes in an array
          * @return array Full list of classes
          */
-        public static function getServices(){
+        public static function get_services(){
             return [
                 Base\MobileSasa_Settings::class,
                 Base\MobileSasa_Enqueue::class,
@@ -41,8 +41,8 @@ if( ! class_exists('MobileSasa_Init')){
          * Loop through the classes, initialize them, and call the register() method if it exists
          * @return  
          */        
-        public static function registerServices(){
-            foreach(self::getServices() as $class){
+        public static function register_services(){
+            foreach(self::get_services() as $class){
                 $service = self::instantiate($class);
                 if(method_exists($service, 'register')){
                     $service->register();

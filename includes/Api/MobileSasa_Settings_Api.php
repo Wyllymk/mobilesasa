@@ -34,24 +34,24 @@ if( ! class_exists('MobileSasa_Settings_Api')){
 
         public static function register(){
             if(! empty(self::$admin_pages)){
-                add_action('admin_menu', array(self::class, 'addAdminMenu'));
+                add_action('admin_menu', array(self::class, 'add_admin_menu'));
             }
             if(! empty(self::$settings)){
-                add_action('admin_init', array(self::class, 'registerCustomFields'));
+                add_action('admin_init', array(self::class, 'register_custom_fields'));
             }
         }
 
-        public static function addPages(array $pages){
+        public static function add_pages(array $pages){
            self::$admin_pages = $pages;
            return new static();
         }
 
-        public static function addSubPages(array $pages){
+        public static function add_sub_pages(array $pages){
             self::$admin_sub_pages = array_merge(self::$admin_sub_pages, $pages);
             return new static(); // Late static binding, returns an instance of the calling class
         }
 
-        public static function withSubPage(string $title = null){
+        public static function with_sub_page(string $title = null){
             if(empty (self::$admin_pages)){
                 return new static();
             }
@@ -73,7 +73,7 @@ if( ! class_exists('MobileSasa_Settings_Api')){
             return new static();
         }
 
-        public static function addAdminMenu() {
+        public static function add_admin_menu() {
             
             foreach (self::$admin_pages as $page) {
                 add_menu_page($page['page_title'], $page['menu_title'], $page['capability'], $page['menu_slug'], $page['callback'], $page['icon_url'], $page['position']);
@@ -85,22 +85,22 @@ if( ! class_exists('MobileSasa_Settings_Api')){
             
         }
 
-        public static function setSettings(array $settings){
+        public static function set_settings(array $settings){
             self::$settings = $settings;
             return new static(); // Late static binding, returns an instance of the calling class
         }
 
-        public static function setSections(array $sections){
+        public static function set_sections(array $sections){
             self::$sections = $sections;
             return new static(); // Late static binding, returns an instance of the calling class
         }
 
-        public static function setFields(array $fields){
+        public static function set_fields(array $fields){
             self::$fields = $fields;
             return new static(); // Late static binding, returns an instance of the calling class
         }
 
-        public static function registerCustomFields(){
+        public static function register_custom_fields(){
             //Register settings
             foreach (self::$settings as $setting) {
                 register_setting( $setting['option_group'], $setting['option_name'], (isset ($setting['callback']) ? $setting['callback'] : '') );

@@ -1,5 +1,5 @@
 === Mobile Sasa SMS ===
-Contributors: your-username
+Contributors: wyllymk
 Tags: sms, mobile-sasa, woocommerce, notifications, bulk-sms
 Requires at least: 5.0
 Tested up to: 6.5
@@ -28,6 +28,16 @@ The Mobile Sasa SMS Plugin allows you to send SMS notifications to your customer
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Navigate to the 'Mobile Sasa SMS' menu in the WordPress admin area.
 4. Configure the plugin settings, including the Mobile Sasa API credentials and notification preferences.
+
+== Frequently Asked Questions ==
+
+= How do I send bulk SMS messages? =
+
+To send bulk SMS messages, navigate to the 'Bulk SMS' settings page in the WordPress admin area, input your desired message, and select the recipients.
+
+= What WooCommerce order events trigger SMS notifications? =
+
+SMS notifications are triggered for various WooCommerce order events, including pending, on-hold, processing, completed, cancelled, failed, ready for pickup, failed delivery, returned, and refunded.
 
 == Changelog ==
 
