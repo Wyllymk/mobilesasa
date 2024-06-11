@@ -84,6 +84,8 @@ $message_sent = get_transient('wcbulksms_message_sent');
 $scheduled_messages = get_transient('wcbulksms_message_scheduled');
 $sender_id_empty = get_transient('wc_mobilesasa_sender_id_empty');
 $token_empty = get_transient('wc_mobilesasa_token_empty');
+$users_empty = get_transient('wcbulksms_users_empty');
+
 
 if($message_empty){
     delete_transient('wcbulksms_message_empty');
@@ -120,7 +122,15 @@ if($message_empty){
     <p><b><?php esc_html_e('Please enter your MOBILESASA token.', 'mobilesasa'); ?></b></p>
 </div>
 <?php
+} elseif ($users_empty) {
+    delete_transient('wcbulksms_users_empty');
+    ?>
+<div class="notice notice-mobilesasa notice-error is-dismissible">
+    <p><b><?php esc_html_e('Please select at least 1 customer.', 'mobilesasa'); ?></b></p>
+</div>
+<?php
 }
+
 $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $current_tab variable
 ?>
 
@@ -150,60 +160,39 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="send_bulk_sms">
                 <?php wp_nonce_field('send_bulk_sms_nonce'); ?>
-                <table class="wp-list-table widefat fixed striped custom-table">
-                    <thead>
-                        <tr>
-                            <th><?php esc_html_e('Name', 'mobilesasa'); ?></th>
-                            <th><?php esc_html_e('Phone', 'mobilesasa'); ?></th>
-                            <th><?php esc_html_e('Email', 'mobilesasa'); ?></th>
-                            <th><?php esc_html_e('Orders Placed', 'mobilesasa'); ?></th>
-                            <th><?php esc_html_e('Amount Spent', 'mobilesasa'); ?></th>
-                            <th><?php esc_html_e('Send SMS', 'mobilesasa'); ?></th>
-                        </tr>
-                    </thead>
-                    <tbody style="max-height: 300px; overflow-y: auto;">
-                        <?php 
-                        $perPage = 10;
-                        $currentPage = isset($_GET['page']) ? absint($_GET['page']) : 1;
-                        $offset = ($currentPage - 1) * $perPage;
+                <div class="table-container">
+                    <table class="wp-list-table widefat fixed striped custom-table">
+                        <thead>
+                            <tr>
+                                <th><?php esc_html_e('Name', 'mobilesasa'); ?></th>
+                                <th><?php esc_html_e('Phone', 'mobilesasa'); ?></th>
+                                <th><?php esc_html_e('Email', 'mobilesasa'); ?></th>
+                                <th><?php esc_html_e('Orders Placed', 'mobilesasa'); ?></th>
+                                <th><?php esc_html_e('Amount Spent', 'mobilesasa'); ?></th>
+                                <th><?php esc_html_e('Send SMS', 'mobilesasa'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody style="max-height: 300px; overflow-y: auto;">
+                            <?php 
 
-                        $pagedCustomers = array_slice($customers, $offset, $perPage);
+                            foreach ($customers as $customer) : 
+                            ?>
 
-                        foreach ($pagedCustomers as $customer) : 
-                        ?>
-
-                        <tr>
-                            <td><?php echo esc_html($customer['name']); ?></td>
-                            <td><?php echo esc_html($customer['phone']); ?></td>
-                            <td><?php echo esc_html($customer['email']); ?></td>
-                            <td><?php echo esc_html($customer['orders_count']); ?></td>
-                            <td><?php echo wc_price($customer['total_spent']); ?></td>
-                            <td>
-                                <input type="checkbox" name="send_sms[]"
-                                    value="<?php echo esc_attr($customer['phone']); ?>">
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-                <?php
-                $current_url = admin_url('admin.php?page=mobilesasa-settings');
-                $totalPages = ceil(count($customers) / $perPage);
-
-                if ($totalPages > 1) :
-                    $pageLinks = paginate_links(array(
-                        'base' => add_query_arg('page', '%#%', $current_url),
-                        'format' => '',
-                        'prev_text' => __('&laquo;'),
-                        'next_text' => __('&raquo;'),
-                        'total' => $totalPages,
-                        'current' => $currentPage,
-                    ));
-                    ?>
-                <div class="pagination">
-                    <?php echo $pageLinks; ?>
+                            <tr>
+                                <td><?php echo esc_html($customer['name']); ?></td>
+                                <td><?php echo esc_html($customer['phone']); ?></td>
+                                <td><?php echo esc_html($customer['email']); ?></td>
+                                <td><?php echo esc_html($customer['orders_count']); ?></td>
+                                <td><?php echo wc_price($customer['total_spent']); ?></td>
+                                <td>
+                                    <input type="checkbox" name="send_sms[]"
+                                        value="<?php echo esc_attr($customer['phone']); ?>">
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
-                <?php endif; ?>
 
                 <br>
                 <label><input type="checkbox" id="select_all">

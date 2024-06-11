@@ -234,4 +234,20 @@ jQuery(document).ready(function ($) {
 
   // Call the function to hide alerts on clicking another tab
   hideAlertsOnTabClick();
+
+  // Adjust table height function
+  const adjustTableHeight = () => {
+    var table = $(".custom-table")[0];
+    var container = $(".table-container")[0];
+    var visibleRows = 10; // Adjust the number of visible rows as needed
+    var rowHeight = table.rows[1].offsetHeight; // Assuming all rows have similar height
+
+    if (table.rows.length > visibleRows) {
+      var maxHeight = visibleRows * rowHeight + "px";
+      container.style.maxHeight = maxHeight;
+    }
+  };
+
+  // Call adjustTableHeight on load and resize
+  $(window).on("load resize", adjustTableHeight);
 });

@@ -34,6 +34,7 @@ if( ! class_exists('MobileSasa_Init')){
                 Plugin\MobileSasa_CustomOrderStatus::class,
                 Plugin\MobileSasa_GetBalance::class,
                 Plugin\MobileSasa_Database::class,
+                Plugin\MobileSasa_Api::class,
                 
             ];
         }

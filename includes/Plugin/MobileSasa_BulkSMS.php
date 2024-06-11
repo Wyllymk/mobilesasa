@@ -135,6 +135,9 @@ if (!class_exists('MobileSasa_BulkSMS')) {
     
                     // Add a success message
                     set_transient('wcbulksms_message_sent', true, 30);
+                }else{
+                    // Add a success message
+                    set_transient('wcbulksms_users_empty', true, 30);
                 }
     
                 // Redirect to the same page with a success parameter

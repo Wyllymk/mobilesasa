@@ -161,14 +161,26 @@ input:checked + .slider:before {
 
 .balance-value {
   color: green; /* Adjust color as needed */
-  font-size: 20px;
+  font-size: 1.5em;
   font-weight: 700;
   background-color: #b1afaf;
-  padding: 10px;
+  padding: 5px 10px;
+  border-radius: 4px;
 }
 
 .button-container {
   text-align: center;
+}
+
+.example-text .right {
+  display: inline-block;
+  margin-left: 10px; /* Adjust the margin as needed */
+  background-color: #b1afaf; /* Set the background color to grey */
+  color: green; /* Set the text color to green */
+  font-size: 1em; /* Optional: Adjust the font size */
+  vertical-align: middle; /* Aligns the text with the middle of the input field */
+  padding: 5px 10px; /* Optional: Add some padding for better appearance */
+  border-radius: 4px; /* Optional: Add border-radius for rounded corners */
 }
 
 /* 
@@ -178,6 +190,7 @@ input:checked + .slider:before {
   width: 100%;
   margin: 20px 0;
   overflow-x: auto;
+  max-height: 35em; /* Adjust as needed */
 }
 
 .custom-table {
@@ -195,19 +208,4 @@ input:checked + .slider:before {
 
 .custom-table th {
   background-color: #a7dbb0;
-}
-
-.show-more {
-  cursor: pointer;
-  color: #0073aa;
-  text-decoration: underline;
-}
-
-.show-more:hover {
-  color: #005177;
-}
-
-.td-flex {
-  display: flex;
-  justify-content: space-between;
 }

@@ -13,8 +13,12 @@ if ($is_update) {
 }
 
 // Check if the message was sent successfully
+$credentials_saved = get_transient('wc_credentials_saved');
 $message_sent = get_transient('mobilesasa_balance_response');
-$token_empty = get_transient('wcbulksms_token_empty');
+$sender_id_empty = get_transient('wc_mobilesasa_sender_id_empty');
+$token_empty = get_transient('wc_mobilesasa_token_empty');
+$sender_error = get_transient('wc_mobilesasa_sender_error');
+
 
 if ($message_sent) {
     delete_transient('mobilesasa_balance_response');
@@ -23,14 +27,37 @@ if ($message_sent) {
     <p><strong><?php esc_html_e('Balance retrieved successfully.', 'mobilesasa'); ?></strong></p>
 </div>
 <?php
-} elseif($token_empty){
-    delete_transient('wcbulksms_token_empty');
+} elseif($sender_id_empty){
+    delete_transient('wc_mobilesasa_sender_id_empty');
     ?>
 <div class="notice notice-mobilesasa notice-error is-dismissible">
-    <p><strong><?php esc_html_e('Please enter your MOBILESASA token.', 'mobilesasa'); ?></strong></p>
+    <p><strong><?php esc_html_e('Please enter your MOBILESASA Sender ID.', 'mobilesasa'); ?></strong></p>
 </div>
 <?php
        
+} elseif($token_empty){
+    delete_transient('wc_mobilesasa_token_empty');
+    ?>
+<div class="notice notice-mobilesasa notice-error is-dismissible">
+    <p><strong><?php esc_html_e('Please enter your MOBILESASA Api Token.', 'mobilesasa'); ?></strong></p>
+</div>
+<?php
+       
+} elseif($sender_error){
+    delete_transient('wc_mobilesasa_sender_error');
+    ?>
+<div class="notice notice-mobilesasa notice-error is-dismissible">
+    <p><strong><?php esc_html_e('Please enter a valid MOBILESASA Sender ID.', 'mobilesasa'); ?></strong></p>
+</div>
+<?php
+       
+} elseif ($credentials_saved) {
+    delete_transient('wc_credentials_saved');
+?>
+<div class="notice notice-mobilesasa notice-success is-dismissible">
+    <p><strong><?php esc_html_e('Credentials saved successfully.', 'mobilesasa'); ?></strong></p>
+</div>
+<?php
 }
 
 $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $current_tab variable
@@ -107,17 +134,50 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
 
     <div class="tab-content">
         <div id="tab-1" class="tab-pane active">
-            <form action="<?php echo admin_url(); ?>options.php" method="post">
-                <?php
-                // Output nonce, action, and option_page fields for a settings page
-                settings_fields('mobilesasa_admin_group');
+            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <input type="hidden" name="action" value="save_credentials">
+                <?php wp_nonce_field('save_credentials_nonce'); 
+                
+                // Get options
+                $mobilesasa_defaults = get_option('mobilesasa_defaults', array());
 
-                // Output sections and fields for a settings page
-                do_settings_sections('mobilesasa-sms');
+                // Retrieve Sender ID
+                $sender_id = $mobilesasa_defaults['mobilesasa_sender'] ?? false;
+                // Retrieve Api Token
+                $api_token = $mobilesasa_defaults['mobilesasa_token'] ?? false;
+                // Retrieve Sender Type
+                $sender_type = $mobilesasa_defaults['mobilesasa_sender_type'] ?? false;
 
-                // Output Save Settings button
-                submit_button('Save Credentials');
                 ?>
+                <table class="form-table" role="presentation">
+                    <tbody>
+                        <tr class="example-text">
+                            <th scope="row"><label for="mobilesasa_sender">Sender ID</label></th>
+                            <td><input type="text" class="regular-text" name="mobilesasa_sender"
+                                    value="<?php esc_html_e($sender_id); ?>" placeholder="Enter Mobile Sasa Sender ID">
+                                <?php
+                                    if ($sender_type !== false) {
+                                        echo '<div class="right">' . esc_html($sender_type) . '</div>';
+                                    } else {
+                                        echo '<div class="right">' . esc_html__('N/A', 'mobilesasa') . '</div>'; // Display default value if balance response is not available
+                                    }
+                                ?>
+                                <p class="description">e.g MOBILESASA</p>
+                            </td>
+                        </tr>
+                        <tr class="example-text">
+                            <th scope="row"><label for="mobilesasa_token">API Token</label></th>
+                            <td><input type="text" class="regular-text" name="mobilesasa_token"
+                                    value="<?php esc_html_e($api_token); ?>" placeholder="Enter Mobile Sasa API Token">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button type="submit" class="button button-primary">
+                    <?php esc_html_e('Save Credentials', 'mobilesasa'); ?>
+                </button>
+                <br><br>
             </form>
             <hr>
             <h3><?php esc_html_e('Get Balance', 'mobilesasa'); ?></h3>
