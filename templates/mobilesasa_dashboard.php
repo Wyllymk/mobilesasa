@@ -15,9 +15,13 @@ if ($is_update) {
 // Check if the message was sent successfully
 $credentials_saved = get_transient('wc_credentials_saved');
 $message_sent = get_transient('mobilesasa_balance_response');
-$sender_id_empty = get_transient('wc_mobilesasa_sender_id_empty');
+$bulk_sender_id_empty = get_transient('wc_mobilesasa_bulk_sender_id_empty');
+$transactional_sender_id_empty = get_transient('wc_mobilesasa_transactional_sender_id_empty');
 $token_empty = get_transient('wc_mobilesasa_token_empty');
-$sender_error = get_transient('wc_mobilesasa_sender_error');
+$bulk_sender_error = get_transient('wc_mobilesasa_bulk_sender_id_error');
+$transactional_sender_error = get_transient('wc_mobilesasa_transactional_sender_id_error');
+$bulk_sender_type = get_transient('wc_mobilesasa_bulk_sender_id_incorrect_type');
+$transactional_sender_type = get_transient('wc_mobilesasa_transactional_sender_id_incorrect_type');
 
 
 if ($message_sent) {
@@ -27,11 +31,36 @@ if ($message_sent) {
     <p><strong><?php esc_html_e('Balance retrieved successfully.', 'mobilesasa'); ?></strong></p>
 </div>
 <?php
-} elseif($sender_id_empty){
-    delete_transient('wc_mobilesasa_sender_id_empty');
+} elseif($bulk_sender_id_empty){
+    delete_transient('wc_mobilesasa_bulk_sender_id_empty');
     ?>
 <div class="notice notice-mobilesasa notice-error is-dismissible">
-    <p><strong><?php esc_html_e('Please enter your MOBILESASA Sender ID.', 'mobilesasa'); ?></strong></p>
+    <p><strong><?php esc_html_e('Please enter your Bulk MOBILESASA Sender ID.', 'mobilesasa'); ?></strong></p>
+</div>
+<?php
+       
+} elseif($bulk_sender_error){
+    delete_transient('wc_mobilesasa_bulk_sender_id_error');
+    ?>
+<div class="notice notice-mobilesasa notice-error is-dismissible">
+    <p><strong><?php esc_html_e('Please enter a valid Bulk MOBILESASA Sender ID.', 'mobilesasa'); ?></strong></p>
+</div>
+<?php
+       
+} elseif($transactional_sender_id_empty){
+    delete_transient('wc_mobilesasa_transactional_sender_id_empty');
+    ?>
+<div class="notice notice-mobilesasa notice-error is-dismissible">
+    <p><strong><?php esc_html_e('Please enter your Transactional MOBILESASA Sender ID.', 'mobilesasa'); ?></strong></p>
+</div>
+<?php
+       
+} elseif($transactional_sender_error){
+    delete_transient('wc_mobilesasa_transactional_sender_id_error');
+    ?>
+<div class="notice notice-mobilesasa notice-error is-dismissible">
+    <p><strong><?php esc_html_e('Please enter a valid Transactional MOBILESASA Sender ID.', 'mobilesasa'); ?></strong>
+    </p>
 </div>
 <?php
        
@@ -43,11 +72,20 @@ if ($message_sent) {
 </div>
 <?php
        
-} elseif($sender_error){
-    delete_transient('wc_mobilesasa_sender_error');
+} elseif($bulk_sender_type){
+    delete_transient('wc_mobilesasa_bulk_sender_id_incorrect_type');
     ?>
 <div class="notice notice-mobilesasa notice-error is-dismissible">
-    <p><strong><?php esc_html_e('Please enter a valid MOBILESASA Sender ID.', 'mobilesasa'); ?></strong></p>
+    <p><strong><?php esc_html_e('Please enter a Promotional MOBILESASA Sender ID.', 'mobilesasa'); ?></strong></p>
+</div>
+<?php
+       
+} elseif($transactional_sender_type){
+    delete_transient('wc_mobilesasa_transactional_sender_id_incorrect_type');
+    ?>
+<div class="notice notice-mobilesasa notice-error is-dismissible">
+    <p><strong><?php esc_html_e('Please enter a Transactional MOBILESASA Sender ID.', 'mobilesasa'); ?></strong>
+    </p>
 </div>
 <?php
        
@@ -142,22 +180,44 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
                 $mobilesasa_defaults = get_option('mobilesasa_defaults', array());
 
                 // Retrieve Sender ID
-                $sender_id = $mobilesasa_defaults['mobilesasa_sender'] ?? false;
+                $bulk_sender_id = $mobilesasa_defaults['bulk_sender_id'] ?? false;
+                // Retrieve Sender ID
+                $transactional_sender_id = $mobilesasa_defaults['transactional_sender_id'] ?? false;
                 // Retrieve Api Token
                 $api_token = $mobilesasa_defaults['mobilesasa_token'] ?? false;
-                // Retrieve Sender Type
-                $sender_type = $mobilesasa_defaults['mobilesasa_sender_type'] ?? false;
+                // Retrieve Bulk Sender Type
+                $bulk_sender_type = $mobilesasa_defaults['mobilesasa_bulk_sender_id_type'] ?? false;
+                // Retrieve Transactional Sender Type
+                $transactional_sender_type = $mobilesasa_defaults['mobilesasa_transactional_sender_id_type'] ?? false;
+                
 
                 ?>
                 <table class="form-table" role="presentation">
                     <tbody>
                         <tr class="example-text">
-                            <th scope="row"><label for="mobilesasa_sender">Sender ID</label></th>
-                            <td><input type="text" class="regular-text" name="mobilesasa_sender"
-                                    value="<?php esc_html_e($sender_id); ?>" placeholder="Enter Mobile Sasa Sender ID">
+                            <th scope="row"><label for="bulk_sender_id">Bulk SMS Sender ID</label></th>
+                            <td><input type="text" class="regular-text" name="bulk_sender_id"
+                                    value="<?php esc_html_e($bulk_sender_id); ?>"
+                                    placeholder="Enter Bulk Mobile Sasa Sender ID">
                                 <?php
-                                    if ($sender_type !== false) {
-                                        echo '<div class="right">' . esc_html($sender_type) . '</div>';
+                                    if ($bulk_sender_type !== false) {
+                                        echo '<div class="right">' . esc_html($bulk_sender_type) . '</div>';
+                                    } else {
+                                        echo '<div class="right">' . esc_html__('N/A', 'mobilesasa') . '</div>'; // Display default value if balance response is not available
+                                    }
+                                ?>
+                                <p class="description">e.g BITWISE</p>
+                            </td>
+                        </tr>
+                        <tr class="example-text">
+                            <th scope="row"><label for="transactional_sender_id">Transactional SMS Sender ID</label>
+                            </th>
+                            <td><input type="text" class="regular-text" name="transactional_sender_id"
+                                    value="<?php esc_html_e($transactional_sender_id); ?>"
+                                    placeholder="Enter Transactional Mobile Sasa Sender ID">
+                                <?php
+                                    if ($transactional_sender_type !== false) {
+                                        echo '<div class="right">' . esc_html($transactional_sender_type) . '</div>';
                                     } else {
                                         echo '<div class="right">' . esc_html__('N/A', 'mobilesasa') . '</div>'; // Display default value if balance response is not available
                                     }

@@ -41,25 +41,25 @@ if (!class_exists('MobileSasa_BulkSMS')) {
         
             // Get the default sender ID and API token for the SMS service
             $default_options = get_option('mobilesasa_defaults');
-            $senderid = $default_options['mobilesasa_sender'];
-            $apitoken = $default_options['mobilesasa_token'];
+            $sender_id = $default_options['bulk_sender_id'];
+            $api_token = $default_options['mobilesasa_token'];
 
             // Retrieve the message from $_POST
             $message = sanitize_text_field($_POST['bulk_sms_message']);
             
             if (empty($message)) {
                 // Set transient for empty message
-                set_transient('wcbulksms_message_empty', true, 30);
+                set_transient('wc_bulksms_message_empty', true, 30);
                 // Redirect to the same page with an error parameter
                 wp_redirect(add_query_arg('error', 'empty_message', wp_get_referer()));
                 exit;
-            }  elseif (empty($senderid)) {
+            }  elseif (empty($sender_id)) {
                 // Set transient for empty message
                 set_transient('wc_mobilesasa_sender_id_empty', true, 30);
                 // Redirect to the same page with an error parameter
                 wp_redirect(add_query_arg('error', 'empty_sender_id', wp_get_referer()));
                 exit;
-            } elseif (empty($apitoken)) {
+            } elseif (empty($api_token)) {
                 // Set transient for empty message
                 set_transient('wc_mobilesasa_token_empty', true, 30);
                 // Redirect to the same page with an error parameter
@@ -112,7 +112,7 @@ if (!class_exists('MobileSasa_BulkSMS')) {
                 }
         
                 // Add a success message
-                set_transient('wcbulksms_message_scheduled', true, 30);
+                set_transient('wc_bulksms_message_scheduled', true, 30);
         
                 // Redirect to the same page with a success parameter
                 wp_redirect(add_query_arg('scheduled', 'true', wp_get_referer()));
@@ -120,24 +120,24 @@ if (!class_exists('MobileSasa_BulkSMS')) {
             } else {
 
                 // Initialize the SMS sending class with the sender ID and API token
-                MobileSasa_SendSMS::init($senderid, $apitoken);
-    
+                MobileSasa_SendSMS::init($sender_id, $api_token);
+                
                 if (!empty($_POST['send_sms'])) {
                                           
                     $phones = array_map('sanitize_text_field', $_POST['send_sms']);
                     $cleaned_phones = MobileSasa_SendSMS::clean_phone($phones);
     
                     $message_id = MobileSasa_SendSMS::send_sms($cleaned_phones, $message);
-                    
+
                     if ($message_id) {
                         self::save_message($message, $cleaned_phones, 'Sent', 0, $message_id);
                     }
     
                     // Add a success message
-                    set_transient('wcbulksms_message_sent', true, 30);
+                    set_transient('wc_bulksms_message_sent', true, 30);
                 }else{
                     // Add a success message
-                    set_transient('wcbulksms_users_empty', true, 30);
+                    set_transient('wc_bulksms_users_empty', true, 30);
                 }
     
                 // Redirect to the same page with a success parameter
@@ -189,11 +189,11 @@ if (!class_exists('MobileSasa_BulkSMS')) {
                 $recipients = json_decode($scheduled_message['recipients'], true);
         
                 $default_options = get_option('mobilesasa_defaults');
-                $senderid = $default_options['mobilesasa_sender'];
-                $apitoken = $default_options['mobilesasa_token'];
+                $sender_id = $default_options['mobilesasa_sender'];
+                $api_token = $default_options['mobilesasa_token'];
         
                 // Initialize the SMS sending class with the sender ID and API token
-                MobileSasa_SendSMS::init($senderid, $apitoken);
+                MobileSasa_SendSMS::init($sender_id, $api_token);
         
                 $cleaned_phones = MobileSasa_SendSMS::clean_phone($recipients);
                 $message_id = MobileSasa_SendSMS::send_sms($cleaned_phones, $message);

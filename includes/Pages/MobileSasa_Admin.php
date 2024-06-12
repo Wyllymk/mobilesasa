@@ -101,16 +101,6 @@ if( ! class_exists('MobileSasa_Admin')){
         public static function set_admin_settings(): void {
             $args = array(
                 array(
-                    'option_group'  => 'mobilesasa_admin_group',
-                    'option_name'   => 'mobilesasa_defaults',
-                    'callback'      => [self::$callbacks, 'mobilesasa_options_group'],
-                ),
-                array(
-                    'option_group'  => 'mobilesasa_bulk_group',
-                    'option_name'   => 'mobilesasa_bulk_options',
-                    'callback'      => [self::$callbacks, 'mobilesasa_options_group'],
-                ),
-                array(
                     'option_group'  => 'mobilesasa_transactional_group',
                     'option_name'   => 'mobilesasa_transactional_options',
                     'callback'      => [self::$callbacks, 'mobilesasa_options_group'],
@@ -125,13 +115,6 @@ if( ! class_exists('MobileSasa_Admin')){
          */
         public static function set_admin_sections(): void {
             $args = array(
-                array(
-                    'id'            => 'mobilesasa_index_token',
-                    'title'         => 'Mobile Sasa Credentials',
-                    'callback'      => [self::$callbacks, 'mobilesasa_admin_section'],
-                    'page'          => 'mobilesasa-sms'
-                ),
-               
                 array(
                     'id'            => 'transactionalsms_index',
                     'title'         => 'Transactional SMS Settings',
@@ -148,33 +131,7 @@ if( ! class_exists('MobileSasa_Admin')){
          */
         public static function set_admin_fields(): void {
             $args = array(
-                    [
-                        'id'            => 'mobilesasa_sender',
-                        'title'         => 'Sender ID',
-                        'callback'      => [self::$callbacks, 'mobilesasa_sender'],
-                        'page'          => 'mobilesasa-sms',
-                        'section'       => 'mobilesasa_index_token',
-                        'args'          => array(
-                            'label_for' => 'mobilesasa_sender',
-                            'type'      => 'text',
-                            'class'     => 'example-text',
-                            'desc'      => __( 'e.g MOBILESASA', 'mobilesasa' ),
-                        )
-                    ],
-                    [
-                        'id'            => 'mobilesasa_token',
-                        'title'         => 'API Token',
-                        'callback'      => [self::$callbacks, 'mobilesasa_token'],
-                        'page'          => 'mobilesasa-sms',
-                        'section'       => 'mobilesasa_index_token',
-                        'args'          => array(
-                            'label_for' => 'mobilesasa_token',
-                            'type'      => 'text',
-                            'class'     => 'example-text',
-                        )
-                    ],
-                    
-                   
+
                     array(
                         'id'            => 'transactional_sms_enable',
                         'title'         => 'Enable/ Disable',

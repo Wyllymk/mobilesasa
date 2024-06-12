@@ -109,6 +109,7 @@ if (!class_exists('MobileSasa_SendSMS')) {
 
             return $cleaned_phones;
         }
+        
 
         /**
          * Send an SMS message to one or multiple phone numbers.

@@ -44,18 +44,6 @@ if( ! class_exists('MobileSasa_Callbacks')){
             echo 'Please fill in the fields below!';
         }
 
-        public static function mobilesasa_sender($args) {
-            $options = get_option('mobilesasa_defaults');
-            $mobilesasa_sender = isset($options['mobilesasa_sender']) ? esc_attr($options['mobilesasa_sender']) : '';
-        
-            $html = '<input type="text" class="regular-text" name="mobilesasa_defaults[mobilesasa_sender]" value="' . $mobilesasa_sender . '" placeholder="Enter Mobile Sasa Sender ID">';
-        
-            if (isset($args['desc'])) {
-                $html .= '<p class="description">' . esc_html($args['desc']) . '</p>';
-            }
-        
-            echo $html;
-        }
         public static function mobilesasa_token() {
             $options = get_option('mobilesasa_defaults');
         

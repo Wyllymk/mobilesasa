@@ -8,7 +8,7 @@
  * @package MobileSasa
  * @subpackage MobileSasa/includes/Plugin
  *
- * @autor Wilson Devops <wilsonkabatha@gmail.com>
+ * @author Wilson Devops <wilsonkabatha@gmail.com>
  */
 
 namespace Wylly\MobileSasa\Plugin;
@@ -79,7 +79,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
             if ($transactional_sms_enable && $transactional_sms_enable === '1') {
                 // Get the default sender ID and API token for the SMS service
                 $default_options = get_option('mobilesasa_defaults');
-                $sender_id = $default_options['mobilesasa_sender'] ?? '';
+                $sender_id = $default_options['transactional_sender_id'] ?? '';
                 $api_token = $default_options['mobilesasa_token'] ?? '';
 
                 // Initialize the SMS sending class with the sender ID and API token
@@ -118,7 +118,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
                     }
                 }
 
-                $$admin_statuses = ['pending', 'on-hold', 'processing'];
+                $admin_statuses = ['pending', 'on-hold', 'processing'];
                 $admin_phone_number = self::$options['transactional_admin_number'] ?? '';
                 $has_admin_logged = get_post_meta($order->get_id(), '_admin_sms_sent', true);
                 
@@ -178,7 +178,7 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
                 if ($transactional_sms_enable && $transactional_sms_enable === '1') {
                     // Get the default sender ID and API token for the SMS service
                     $default_options = get_option('mobilesasa_defaults');
-                    $sender_id = $default_options['mobilesasa_sender'] ?? '';
+                    $sender_id = $default_options['transactional_sender_id'] ?? '';
                     $api_token = $default_options['mobilesasa_token'] ?? '';
 
                     // Initialize the SMS sending class with the sender ID and API token
@@ -200,46 +200,50 @@ if (!class_exists('MobileSasa_TransactionalSMS')) {
                     }
                     // Set flag to prevent duplicate logging
 					update_post_meta( $order->get_id(), '_sms_sent_logged', true );
-					// Delete the meta entry
-					delete_post_meta( $order->get_id(), '_draft_duration_logged' );
-
-                } else {
-                    // error_log("Transactional SMS is not enabled.");
                 }
-			
 			}
-
 		}
-
         /**
-         * Schedules a periodic event to delete custom post meta.
+         * Schedules a daily event to delete custom post meta.
          */
         public static function schedule_delete_custom_postMeta(): void {
-			// Check if the scheduled event already exists
-			if (!wp_next_scheduled('delete_custom_post_meta_event')) {
-				// Schedule the event to run once every 2 hours
-				wp_schedule_event(time(), 'daily', 'delete_custom_post_meta_event');
-			}
-		}
+            if ( ! wp_next_scheduled ( 'delete_custom_post_meta_event' ) ) {
+                wp_schedule_event( time(), 'daily', 'delete_custom_post_meta_event' );
+            }
+        }
         
         /**
-         * Deletes specific custom post meta data created by the plugin.
+         * Deletes custom post meta for the specified meta key.
          */
-        private static function delete_custom_postMeta(): void {
-			// Define the post meta keys created by your plugin
-			$meta_keys = array(
-				'_admin_sms_sent',
-				'_draft_duration_logged',
-				'_sms_sent_logged'
-				// Add other meta keys as needed
-			);
-
-			// Loop through each meta key and delete the post meta for all posts
-			foreach ($meta_keys as $meta_key) {
-				// Delete the post meta for all posts
-				delete_metadata('post', 0, $meta_key, '', true);
-			}
-		}
-        
+        public static function delete_custom_postMeta(): void {
+            // Meta key to delete
+            $meta_key = '_draft_duration_logged';
+            
+            // Arguments to retrieve posts with the custom meta key
+            $args = array(
+                'post_type' => 'shop_order', // WooCommerce orders post type
+                'post_status' => 'any', // Include all post statuses
+                'meta_query' => array(
+                    array(
+                        'key' => $meta_key,
+                    ),
+                ),
+                'fields' => 'ids', // Only return post IDs
+            );
+            
+            // Query posts with the custom meta key
+            $query = new \WP_Query($args);
+            
+            // Check if there are any posts with the custom meta key
+            if ($query->have_posts()) {
+                // Loop through the posts and delete the custom meta key
+                foreach ($query->posts as $post_id) {
+                    delete_post_meta($post_id, $meta_key);
+                }
+            }
+            
+            // Reset the query
+            wp_reset_postdata();
+        }
     }
 }

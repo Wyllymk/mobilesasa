@@ -79,30 +79,30 @@ $mobilesasa_defaults = get_option('mobilesasa_defaults', array());
 $message = $mobilesasa_defaults['mobilesasa_message'] ?? false;
 
 // Check if the message was sent successfully
-$message_empty = get_transient('wcbulksms_message_empty');
-$message_sent = get_transient('wcbulksms_message_sent');
-$scheduled_messages = get_transient('wcbulksms_message_scheduled');
+$message_empty = get_transient('wc_bulksms_message_empty');
+$message_sent = get_transient('wc_bulksms_message_sent');
+$scheduled_messages = get_transient('wc_bulksms_message_scheduled');
 $sender_id_empty = get_transient('wc_mobilesasa_sender_id_empty');
 $token_empty = get_transient('wc_mobilesasa_token_empty');
-$users_empty = get_transient('wcbulksms_users_empty');
+$users_empty = get_transient('wc_bulksms_users_empty');
 
 
 if($message_empty){
-    delete_transient('wcbulksms_message_empty');
+    delete_transient('wc_bulksms_message_empty');
     ?>
 <div class="notice notice-mobilesasa notice-error is-dismissible">
     <p><b><?php esc_html_e('Please provide a message to send.', 'mobilesasa'); ?></b></p>
 </div>
 <?php
 }elseif ($message_sent) {
-    delete_transient('wcbulksms_message_sent');
+    delete_transient('wc_bulksms_message_sent');
     ?>
 <div class="notice notice-mobilesasa notice-success is-dismissible">
     <p><b><?php esc_html_e('SMS messages sent successfully.', 'mobilesasa'); ?></b></p>
 </div>
 <?php
 } elseif ($scheduled_messages) {
-    delete_transient('wcbulksms_message_scheduled');
+    delete_transient('wc_bulksms_message_scheduled');
     ?>
 <div class="notice notice-mobilesasa notice-info is-dismissible">
     <p><b><?php esc_html_e('SMS messages scheduled for sending.', 'mobilesasa'); ?></b></p>
@@ -112,18 +112,18 @@ if($message_empty){
     delete_transient('wc_mobilesasa_sender_id_empty');
     ?>
 <div class="notice notice-mobilesasa notice-error is-dismissible">
-    <p><b><?php esc_html_e('Please enter your MOBILESASA sender ID.', 'mobilesasa'); ?></b></p>
+    <p><b><?php esc_html_e('Please enter your Promotional MOBILESASA Sender ID.', 'mobilesasa'); ?></b></p>
 </div>
 <?php
 } elseif ($token_empty) {
     delete_transient('wc_mobilesasa_token_empty');
     ?>
 <div class="notice notice-mobilesasa notice-error is-dismissible">
-    <p><b><?php esc_html_e('Please enter your MOBILESASA token.', 'mobilesasa'); ?></b></p>
+    <p><b><?php esc_html_e('Please enter your MOBILESASA Api Token.', 'mobilesasa'); ?></b></p>
 </div>
 <?php
 } elseif ($users_empty) {
-    delete_transient('wcbulksms_users_empty');
+    delete_transient('wc_bulksms_users_empty');
     ?>
 <div class="notice notice-mobilesasa notice-error is-dismissible">
     <p><b><?php esc_html_e('Please select at least 1 customer.', 'mobilesasa'); ?></b></p>
@@ -199,7 +199,7 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tab-1'; // Initialize $curr
                     <?php esc_html_e('Select All Customers', 'mobilesasa'); ?>
                 </label>
                 <br><br>
-                <p><?php esc_html_e('Enter your message below. You can customize it for each customer by using the shortcode {name}.', 'mobilesasa'); ?>
+                <p><?php esc_html_e('Enter your message below.', 'mobilesasa'); ?>
                 </p>
                 <textarea name="bulk_sms_message" rows="5" style="width:30%;"
                     placeholder="<?php esc_attr_e('Enter your message here...', 'mobilesasa'); ?>"><?php echo esc_textarea($message); ?></textarea>

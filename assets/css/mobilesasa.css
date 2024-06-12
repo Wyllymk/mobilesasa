@@ -209,3 +209,18 @@ input:checked + .slider:before {
 .custom-table th {
   background-color: #a7dbb0;
 }
+
+.show-more {
+  cursor: pointer;
+  color: #0073aa;
+  text-decoration: underline;
+}
+
+.show-more:hover {
+  color: #005177;
+}
+
+.td-flex {
+  display: flex;
+  justify-content: space-between;
+}
