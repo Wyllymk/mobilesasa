@@ -52,10 +52,10 @@ if (!class_exists('MobileSasa_Api')) {
             $api_token = sanitize_text_field($_POST['mobilesasa_token']);
 
             // Handle the bulk sender ID
-            self::update_sender_id($bulk_sender_id, 'bulk_sender_id', $default_options, 'Promotional');
+            self::update_sender_id($bulk_sender_id, 'bulk_sender_id', $default_options, ['Promotional']);
 
             // Handle the transactional sender ID
-            self::update_sender_id($transactional_sender_id, 'transactional_sender_id', $default_options, 'Transactional');
+            self::update_sender_id($transactional_sender_id, 'transactional_sender_id', $default_options, ['Transactional', 'Promotional']);
 
             // Check if the API token is empty and display an error message if it is
             if (empty($api_token)) {
@@ -106,14 +106,15 @@ if (!class_exists('MobileSasa_Api')) {
                     // Extract the senderType from the payload
                     $sender_type = sanitize_text_field($data['payload']['senderType']);
 
-                    // Check if the sender type matches the expected type
-                    if ($sender_type !== $expected_type) {
+                    // Check if the sender type matches any of the expected types
+                    if (!in_array($sender_type, $expected_type)) {
                         // Set transient for incorrect sender type
                         set_transient("wc_mobilesasa_{$option_key}_incorrect_type", true, 30);
                         // Redirect to the same page with an error parameter
                         wp_redirect(add_query_arg('error', "{$option_key}_incorrect_type", wp_get_referer()));
                         exit;
                     }
+
 
                     // Update the sender ID and sender type in the default options array
                     $default_options[$option_key] = $sender_id;

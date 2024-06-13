@@ -1,34 +1,23 @@
 <?php
-// Ensure the file is included only in the admin area
-if ( ! defined( 'ABSPATH' ) || ! is_admin() ) {
+// Check if in admin area and load necessary files
+if (!defined('ABSPATH') || !is_admin()) {
     exit;
 }
-/**
- * Check if the user has submitted the settings
- * WordPress adds the "settings-updated" $_GET parameter to the URL
- */
-$is_update = isset($_GET['settings-updated']);
 
-// Determine the message based on the update status
+// Check if settings were updated and set appropriate message
+$is_update = isset($_GET['settings-updated']);
 $message = $is_update ? __('Messages Updated', 'mobilesasa') : __('Settings Saved', 'mobilesasa');
 
 if ($is_update) {
-    // Add a settings updated message with the class of "updated"
     add_settings_error('mobilesasa_messages', 'ga_message', $message, 'updated');
 }
 
+// Retrieve sent and scheduled messages from the database
 global $wpdb;
-
-// Define the table name
 $mobilesasa_messages = $wpdb->prefix . 'mobilesasa_messages';
-
-// Retrieve sent messages from the database
 $sent_messages = $wpdb->get_results("SELECT * FROM $mobilesasa_messages ORDER BY sent_at DESC", ARRAY_A);
 
-// Define the table name
 $mobilesasa_scheduled_messages = $wpdb->prefix . 'mobilesasa_scheduled_messages';
-
-// Retrieve scheduled messages from the database
 $scheduled_messages = $wpdb->get_results("SELECT * FROM $mobilesasa_scheduled_messages ORDER BY id DESC", ARRAY_A);
 ?>
 
@@ -38,15 +27,12 @@ $scheduled_messages = $wpdb->get_results("SELECT * FROM $mobilesasa_scheduled_me
     <?php settings_errors('mobilesasa_messages'); ?>
 
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#tab-1" id="tab-link-1"><?php esc_html_e('Scheduled Messages', 'mobilesasa'); ?></a>
-        </li>
-        <li><a href="#tab-2" id="tab-link-2"><?php esc_html_e('Sent Messages', 'mobilesasa'); ?></a>
-        </li>
+        <li class="active"><a href="#tab-1"><?php esc_html_e('Scheduled Messages', 'mobilesasa'); ?></a></li>
+        <li><a href="#tab-2"><?php esc_html_e('Sent Messages', 'mobilesasa'); ?></a></li>
     </ul>
 
     <div class="tab-content">
         <div id="tab-1" class="tab-pane active">
-
             <div class="table-container">
                 <?php if (!empty($scheduled_messages)) : ?>
                 <table class="custom-table">
@@ -57,7 +43,7 @@ $scheduled_messages = $wpdb->get_results("SELECT * FROM $mobilesasa_scheduled_me
                             <th><?php esc_html_e('Recipients', 'mobilesasa'); ?></th>
                             <th><?php esc_html_e('Status', 'mobilesasa'); ?></th>
                             <th><?php esc_html_e('Scheduled Time', 'mobilesasa'); ?></th>
-                            <th><?php esc_html_e('Actions', 'mobilesasa'); ?></th> <!-- New column for actions -->
+                            <th><?php esc_html_e('Actions', 'mobilesasa'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,17 +52,11 @@ $scheduled_messages = $wpdb->get_results("SELECT * FROM $mobilesasa_scheduled_me
                             <td><?php echo esc_html($message['id']); ?></td>
                             <td><?php echo esc_html($message['message']); ?></td>
                             <td>
-                                <span class="show-more" onclick="toggleRecipient(<?php echo $message['id']; ?>)">
+                                <span class="show-more" data-message-id="<?php echo $message['id']; ?>">
                                     <?php esc_html_e('Show Recipients', 'mobilesasa'); ?>
                                 </span>
-                                <div id="recipients-<?php echo $message['id']; ?>" class="recipients"
-                                    style="display: none;">
-                                    <?php
-                                    $recipients = json_decode($message['recipients'], true);
-                                    foreach ($recipients as $recipient) {
-                                        echo esc_html($recipient) . '<br>';
-                                    }
-                                    ?>
+                                <div id="recipients-<?php echo $message['id']; ?>" style="display: none;">
+                                    <?php echo esc_html($message['recipients']); ?>
                                 </div>
                             </td>
                             <td><?php echo esc_html($message['status']); ?></td>
@@ -95,9 +75,23 @@ $scheduled_messages = $wpdb->get_results("SELECT * FROM $mobilesasa_scheduled_me
                 <p><b><?php esc_html_e('No messages found.', 'mobilesasa'); ?></b></p>
                 <?php endif; ?>
             </div>
+            <!-- Modal for Scheduled Messages -->
+            <div id="recipientsModalScheduled" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <table class="recipients-table custom-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th><?php esc_html_e('Phone Number', 'mobilesasa'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody id="recipientListScheduled"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
         <div id="tab-2" class="tab-pane">
-
             <div class="table-container">
                 <?php if (!empty($sent_messages)) : ?>
                 <table class="custom-table striped">
@@ -119,25 +113,15 @@ $scheduled_messages = $wpdb->get_results("SELECT * FROM $mobilesasa_scheduled_me
                             <td><?php echo esc_html($message['sent_at']); ?></td>
                             <td><?php echo esc_html($message['message_body']); ?></td>
                             <td>
-                                <span class="show-more"
-                                    onclick="toggleRecipients('<?php echo $message['id']; ?>', 'sent')">
+                                <span class="show-more" data-message-id="<?php echo $message['id']; ?>">
                                     <?php esc_html_e('Show Recipients', 'mobilesasa'); ?>
                                 </span>
-                                <div id="recipients-<?php echo $message['id']; ?>-sent" class="recipients"
-                                    style="display: none;">
-                                    <?php
-                                    $recipients = json_decode($message['recipients'], true);
-                                    foreach ($recipients as $recipient) {
-                                        echo esc_html($recipient) . '<br>';
-                                    }
-                                    ?>
+                                <div id="recipients-<?php echo $message['id']; ?>-sent" style="display: none;">
+                                    <?php echo esc_html($message['recipients']); ?>
                                 </div>
                             </td>
-
                             <td><?php echo esc_html($message['status']); ?></td>
-                            <td>
-                                <?php echo esc_html($message['delivered_count']); ?>
-                            </td>
+                            <td><?php echo esc_html($message['delivered_count']); ?></td>
                             <td>
                                 <button type="button" class="button button-primary delivery-status-btn">
                                     <?php esc_html_e('Check Status', 'mobilesasa'); ?>
@@ -151,7 +135,21 @@ $scheduled_messages = $wpdb->get_results("SELECT * FROM $mobilesasa_scheduled_me
                 <p><b><?php esc_html_e('No messages found.', 'mobilesasa'); ?></b></p>
                 <?php endif; ?>
             </div>
-
+            <!-- Modal for Sent Messages -->
+            <div id="recipientsModalSent" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <table class="recipients-table custom-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th><?php esc_html_e('Phone Number', 'mobilesasa'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody id="recipientListSent"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>

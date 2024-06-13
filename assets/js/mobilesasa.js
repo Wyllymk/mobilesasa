@@ -1,5 +1,50 @@
 // CHECKBOX JS
 jQuery(document).ready(function ($) {
+  // Function to open modal and display recipients
+  function openModal(modalId, recipients) {
+    const modal = $("#" + modalId);
+    const recipientList = modal.find(".modal-content tbody");
+    recipientList.empty();
+
+    recipients.forEach((recipient, index) => {
+      recipientList.append(`<tr><td>${index + 1}</td><td>${recipient}</td></tr>`);
+    });
+
+    modal.show();
+  }
+
+  // Function to close modal
+  function closeModal(modalId) {
+    $("#" + modalId).hide();
+  }
+
+  // Attach click event to 'Show Recipients' span for scheduled messages
+  $("#tab-1 .show-more").on("click", function () {
+    const messageId = $(this).data("message-id");
+    const recipients = JSON.parse($("#recipients-" + messageId).text());
+    openModal("recipientsModalScheduled", recipients);
+  });
+
+  // Attach click event to 'Show Recipients' span for sent messages
+  $("#tab-2 .show-more").on("click", function () {
+    const messageId = $(this).data("message-id");
+    const recipients = JSON.parse($("#recipients-" + messageId + "-sent").text());
+    openModal("recipientsModalSent", recipients);
+  });
+
+  // Close modal when 'X' is clicked
+  $(".modal .close").on("click", function () {
+    $(this).closest(".modal").hide();
+  });
+
+  // Close modal when clicking outside of the modal content
+  $(window).on("click", function (event) {
+    if ($(event.target).hasClass("modal")) {
+      $(event.target).hide();
+    }
+  });
+
+  // Checkbox JS
   $("#select_all").on("change", function () {
     let checkboxes = $('input[name="send_sms[]"]');
     checkboxes.prop("checked", $(this).prop("checked"));
@@ -92,17 +137,6 @@ jQuery(document).ready(function ($) {
   const currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
 
   $("#schedule_date").val(currentDateTime);
-
-  // RECIPIENTS JS
-  window.toggleRecipient = function (id) {
-    const recipientsDiv = $(`#recipients-${id}`);
-    recipientsDiv.toggle();
-  };
-
-  window.toggleRecipients = function (id, type) {
-    const recipientsDiv = $(`#recipients-${id}-${type}`);
-    recipientsDiv.toggle();
-  };
 
   // DELIVERY STATUS CHECK
   $(".delivery-status-btn").on("click", function (e) {
